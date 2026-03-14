@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product available for sale in the pricelist.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the product" },
+        "category": { "type": "string", "description": "Category of the product" },
+        "unit": { "type": "string", "description": "Unit of measure (e.g., PC, DZN)" },
+        "price": { "type": "number", "description": "Price per unit" },
+        "moq": { "type": "number", "description": "Minimum order quantity" },
+        "bulkPrice": { "type": "number", "description": "Wholesale bulk price" }
+      },
+      "required": ["name", "category", "unit", "price", "moq"]
+    },
+    "GalleryImage": {
+      "title": "Gallery Image",
+      "description": "An image displayed in the product gallery.",
+      "type": "object",
+      "properties": {
+        "src": { "type": "string", "format": "uri", "description": "Image URL" },
+        "alt": { "type": "string", "description": "Alternative text for the image" },
+        "category": { "type": "string", "description": "Category the image belongs to" }
+      },
+      "required": ["src", "alt", "category"]
+    },
+    "OrderItem": {
+      "title": "Order Item",
+      "description": "An item within an order.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "name": { "type": "string" },
+        "quantity": { "type": "number" },
+        "price": { "type": "number" }
+      },
+      "required": ["productId", "name", "quantity", "price"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "A customer order placed through the website.",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string" },
+        "customerEmail": { "type": "string", "format": "email" },
+        "customerPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "processing", "completed", "cancelled"] },
+        "items": { "type": "array", "items": { "$ref": "#/entities/OrderItem" } },
+        "totalAmount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "customerEmail", "customerPhone", "address", "status", "items", "totalAmount", "createdAt"]
+    },
+    "User": {
+      "title": "User",
+      "description": "An administrator user.",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["admin"] },
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": ["role", "email"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Collection of products for the pricelist."
+    },
+    "/gallery/{imageId}": {
+      "schema": { "$ref": "#/entities/GalleryImage" },
+      "description": "Collection of gallery images."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Collection of customer orders."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Collection of admin users."
+    }
+  }
+}

@@ -1,23 +1,66 @@
-import { useState, useMemo } from 'react';
-import { Search, Filter, ShoppingCart } from 'lucide-react';
-import { products } from '../data/products';
+import { useState, useMemo, useEffect } from 'react';
+import { Search, Filter, ShoppingCart, Check } from 'lucide-react';
+import { products as fallbackProducts } from '../data/products';
+import { useCart } from '../context/CartContext';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function PricelistPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [products, setProducts] = useState<any[]>(fallbackProducts.map((p, i) => ({ id: `fallback-${i}`, ...p, name: p.item })));
+  const { addToCart } = useCart();
+  const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      if (!snapshot.empty) {
+        setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
-      const matchesSearch = product.item.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, products]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS' }).format(amount);
+  };
+
+  const handleQuantityChange = (productId: string, value: number, moq: number) => {
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(moq, value)
+    }));
+  };
+
+  const getQuantity = (product: any) => {
+    return quantities[product.id] || product.moq;
+  };
+
+  const handleAddToCart = (product: any) => {
+    const qty = getQuantity(product);
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      moq: product.moq,
+      quantity: qty
+    });
+    
+    setAddedItems(prev => ({ ...prev, [product.id]: true }));
+    setTimeout(() => {
+      setAddedItems(prev => ({ ...prev, [product.id]: false }));
+    }, 2000);
   };
 
   return (
@@ -84,17 +127,20 @@ export default function PricelistPage() {
                   <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Wholesale Bulk Price
                   </th>
+                  <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product, index) => (
-                    <tr key={index} className="hover:bg-slate-50 transition-colors">
+                    <tr key={product.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="text-xs font-medium text-blue-600 mb-1">{product.category}</span>
-                          <span className="text-sm font-medium text-slate-900 truncate max-w-md" title={product.item}>
-                            {product.item}
+                          <span className="text-sm font-medium text-slate-900 truncate max-w-md" title={product.name}>
+                            {product.name}
                           </span>
                         </div>
                       </td>
@@ -111,6 +157,41 @@ export default function PricelistPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 text-right font-bold">
                         {formatCurrency(product.bulkPrice)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
+                            <button 
+                              onClick={() => handleQuantityChange(product.id, getQuantity(product) - product.moq, product.moq)}
+                              className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                            >
+                              -
+                            </button>
+                            <span className="w-10 text-center text-sm font-medium text-slate-700" title={`${getQuantity(product)} ${product.unit}s`}>
+                              {Math.floor(getQuantity(product) / product.moq)}
+                            </span>
+                            <button 
+                              onClick={() => handleQuantityChange(product.id, getQuantity(product) + product.moq, product.moq)}
+                              className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => handleAddToCart(product)}
+                            className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                              addedItems[product.id] 
+                                ? 'bg-emerald-100 text-emerald-700' 
+                                : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'
+                            }`}
+                          >
+                            {addedItems[product.id] ? (
+                              <><Check className="w-4 h-4" /> Added</>
+                            ) : (
+                              <><ShoppingCart className="w-4 h-4" /> Add</>
+                            )}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

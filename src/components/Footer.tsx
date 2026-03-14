@@ -3,83 +3,81 @@ import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 py-16 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+    <footer className="bg-[#0a0a0a] text-slate-300 py-16 border-t border-white/5 relative overflow-hidden">
+      {/* Subtle Background Elements */}
+      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-blue-900/10 to-transparent pointer-events-none"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2 group mb-6 inline-flex">
-              <div className="bg-blue-600 text-white p-2 rounded-full group-hover:bg-blue-500 transition-colors">
-                <Globe className="w-6 h-6" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold leading-none tracking-tight text-white">DEKIT</span>
-                <span className="text-[10px] font-medium tracking-widest text-slate-400 uppercase">Traders</span>
-              </div>
+              <img src="/logo.png" alt="Dekit Traders Logo" className="h-20 w-auto bg-white p-2 rounded-xl shadow-lg" />
             </Link>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">
+            <p className="text-sm text-slate-400 leading-relaxed mb-8">
               Bridging the gap between producers and consumers with dependable service solutions.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="text-slate-400 hover:text-blue-400 transition-colors">
-                <Facebook className="w-5 h-5" />
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                <Facebook className="w-4 h-4" />
               </a>
-              <a href="#" className="text-slate-400 hover:text-blue-400 transition-colors">
-                <Twitter className="w-5 h-5" />
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition-all duration-300">
+                <Twitter className="w-4 h-4" />
               </a>
-              <a href="#" className="text-slate-400 hover:text-blue-400 transition-colors">
-                <Instagram className="w-5 h-5" />
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
+                <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="text-slate-400 hover:text-blue-400 transition-colors">
-                <Linkedin className="w-5 h-5" />
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white transition-all duration-300">
+                <Linkedin className="w-4 h-4" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-bold mb-6">Quick Links</h4>
-            <ul className="space-y-3">
-              <li><Link to="/#about" className="text-sm hover:text-blue-400 transition-colors">About Us</Link></li>
-              <li><Link to="/#services" className="text-sm hover:text-blue-400 transition-colors">Our Services</Link></li>
-              <li><Link to="/#values" className="text-sm hover:text-blue-400 transition-colors">Core Values</Link></li>
-              <li><Link to="/pricelist" className="text-sm hover:text-blue-400 transition-colors">Pricelist</Link></li>
-              <li><Link to="/#gallery" className="text-sm hover:text-blue-400 transition-colors">Gallery</Link></li>
-              <li><Link to="/#contact" className="text-sm hover:text-blue-400 transition-colors">Contact Us</Link></li>
+            <h4 className="text-white font-bold mb-6 text-lg">Quick Links</h4>
+            <ul className="space-y-4">
+              <li><Link to="/#about" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> About Us</Link></li>
+              <li><Link to="/#services" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Our Services</Link></li>
+              <li><Link to="/#values" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Core Values</Link></li>
+              <li><Link to="/pricelist" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Pricelist</Link></li>
+              <li><Link to="/#gallery" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Gallery</Link></li>
+              <li><Link to="/#contact" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Contact Us</Link></li>
             </ul>
           </div>
 
           {/* Divisions */}
           <div>
-            <h4 className="text-white font-bold mb-6">Our Divisions</h4>
-            <ul className="space-y-3">
+            <h4 className="text-white font-bold mb-6 text-lg">Our Divisions</h4>
+            <ul className="space-y-6">
               <li>
-                <Link to="/#services" className="text-sm hover:text-blue-400 transition-colors flex flex-col">
-                  <span className="font-medium text-slate-300">Dekit Slippers</span>
-                  <span className="text-xs text-slate-500">Specialized Comfort Footwear</span>
+                <Link to="/#services" className="group flex flex-col">
+                  <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Slippers</span>
+                  <span className="text-xs text-slate-500 mt-1">Specialized Comfort Footwear</span>
                 </Link>
               </li>
               <li>
-                <Link to="/#services" className="text-sm hover:text-blue-400 transition-colors flex flex-col mt-2">
-                  <span className="font-medium text-slate-300">Dekit Stationers</span>
-                  <span className="text-xs text-slate-500">Wholesale Office Supply</span>
+                <Link to="/#services" className="group flex flex-col">
+                  <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Stationers</span>
+                  <span className="text-xs text-slate-500 mt-1">Wholesale Office Supply</span>
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Legality Status & Bank Details */}
-          <div className="lg:col-span-1">
-            <h4 className="text-white font-bold mb-6 flex items-center gap-2">
+          <div className="lg:col-span-1 space-y-6">
+            <h4 className="text-white font-bold mb-6 flex items-center gap-2 text-lg">
               <FileText className="w-5 h-5 text-blue-500" />
               Official Details
             </h4>
-            <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 mb-4">
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
+            
+            <div className="bg-white/5 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
+              <p className="text-xs text-slate-400 leading-relaxed mb-5">
                 Dekit Traders has been duly registered pursuant to and in accordance with the provisions of the Business Names (Registration) Act and the Rules made thereunder, and has been entered in the Number 624105 in the Index of Registration.
               </p>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs border-b border-white/5 pb-2">
                   <span className="text-slate-500">Business License No:</span>
                   <span className="text-slate-300 font-mono">BL01396912025-2600025809</span>
                 </div>
@@ -90,14 +88,14 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
-              <h5 className="text-sm font-bold text-white mb-3">Bank Details</h5>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs">
+            <div className="bg-white/5 rounded-2xl p-6 border border-white/10 backdrop-blur-sm">
+              <h5 className="text-sm font-bold text-white mb-4">Bank Details</h5>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs border-b border-white/5 pb-2">
                   <span className="text-slate-500">Bank:</span>
                   <span className="text-slate-300 font-medium">NBC Bank</span>
                 </div>
-                <div className="flex justify-between items-center text-xs">
+                <div className="flex justify-between items-center text-xs border-b border-white/5 pb-2">
                   <span className="text-slate-500">Acc Name:</span>
                   <span className="text-slate-300 font-medium">Dekit Traders</span>
                 </div>
@@ -110,7 +108,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">
             &copy; {new Date().getFullYear()} Dekit Traders. All rights reserved.
           </p>
