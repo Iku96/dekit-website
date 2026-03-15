@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Target, Compass, Briefcase, CheckCircle2 } from 'lucide-react';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
 
 // You can easily change these images in the future by updating the URLs below
-const centerSlideshowImages = [
+const fallbackCenterSlideshowImages = [
   "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   "https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
   "https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
 ];
 
-const galleryImages = [
+const fallbackGalleryImages = [
   "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Top Left
   "https://images.unsplash.com/photo-1553413077-190dd305871c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Top Right
   "https://images.unsplash.com/photo-1578575437130-527eed3abbec?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Bottom Left
@@ -19,13 +21,39 @@ const galleryImages = [
 
 export default function About() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [centerSlideshowImages, setCenterSlideshowImages] = useState(fallbackCenterSlideshowImages);
+  const [galleryImages, setGalleryImages] = useState(fallbackGalleryImages);
+
+  useEffect(() => {
+    const q = query(collection(db, 'gallery'), where('category', '==', 'About'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const images = snapshot.docs.map(doc => doc.data().src);
+        if (images.length >= 4) {
+          setGalleryImages(images.slice(0, 4));
+          if (images.length > 4) {
+            setCenterSlideshowImages(images.slice(4));
+          } else {
+            setCenterSlideshowImages(images);
+          }
+        } else {
+          setCenterSlideshowImages(images);
+          setGalleryImages(fallbackGalleryImages);
+        }
+      } else {
+        setCenterSlideshowImages(fallbackCenterSlideshowImages);
+        setGalleryImages(fallbackGalleryImages);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % centerSlideshowImages.length);
     }, 4000); // Change image every 4 seconds
     return () => clearInterval(timer);
-  }, []);
+  }, [centerSlideshowImages.length]);
   return (
     <section id="about" className="py-24 bg-white relative overflow-hidden">
       {/* Subtle Dot Pattern */}
@@ -98,17 +126,17 @@ export default function About() {
                     className="absolute inset-0"
                     style={{ clipPath: 'polygon(50% 20%, 80% 35%, 80% 65%, 50% 80%, 20% 65%, 20% 35%)' }}
                   >
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence initial={false}>
                       <motion.img 
                         key={currentSlide}
                         src={centerSlideshowImages[currentSlide]} 
                         alt="Gallery Center Slideshow" 
                         className="absolute inset-0 w-full h-full object-cover" 
                         referrerPolicy="no-referrer"
-                        initial={{ opacity: 0, scale: 1.05 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }}
+                        initial={{ x: '100%' }}
+                        animate={{ x: 0 }}
+                        exit={{ x: '-100%' }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
                       />
                     </AnimatePresence>
                   </div>

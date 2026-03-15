@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
-const fallbackGalleryCategories = [
+export const fallbackGalleryCategories = [
   {
     title: 'Organizers, Storage & Filling',
     description: 'Keep your workspace tidy with our premium desk organizers, file boxes, and document trays.',

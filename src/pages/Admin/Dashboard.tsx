@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
-import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload } from 'lucide-react';
+import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database } from 'lucide-react';
+import { fallbackGalleryCategories } from '../GalleryPage';
+import { products as fallbackProducts } from '../../data/products';
 
 export default function AdminDashboard() {
   const { user, isAdmin, loading, logout } = useAuth();
@@ -20,9 +22,10 @@ export default function AdminDashboard() {
   const [editingItem, setEditingItem] = useState<any>(null);
 
   // Form states
-  const [productForm, setProductForm] = useState({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0 });
+  const [productForm, setProductForm] = useState({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
   const [galleryForm, setGalleryForm] = useState({ src: '', alt: '', category: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -69,7 +72,8 @@ export default function AdminDashboard() {
         unit: productForm.unit,
         price: Number(productForm.price),
         moq: Number(productForm.moq),
-        ...(productForm.bulkPrice > 0 ? { bulkPrice: Number(productForm.bulkPrice) } : {})
+        ...(productForm.bulkPrice > 0 ? { bulkPrice: Number(productForm.bulkPrice) } : {}),
+        ...(productForm.imageUrl ? { imageUrl: productForm.imageUrl } : {})
       };
 
       if (editingItem) {
@@ -79,7 +83,7 @@ export default function AdminDashboard() {
       }
       setIsProductModalOpen(false);
       setEditingItem(null);
-      setProductForm({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0 });
+      setProductForm({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
     } catch (error) {
       console.error("Error saving product:", error);
       alert("Failed to save product. Check console for details.");
@@ -115,13 +119,12 @@ export default function AdminDashboard() {
 
     setUploadingImage(true);
     try {
-      const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      setGalleryForm({ ...galleryForm, src: url });
+      const { compressImage } = await import('../../utils/imageUtils');
+      const base64Url = await compressImage(file, 800, 800, 0.7);
+      setGalleryForm({ ...galleryForm, src: base64Url });
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Failed to upload image.");
+      alert("Failed to process image.");
     } finally {
       setUploadingImage(false);
     }
@@ -130,6 +133,67 @@ export default function AdminDashboard() {
   const handleDeleteGallery = async (imageId: string) => {
     if (window.confirm('Are you sure you want to delete this image?')) {
       await deleteDoc(doc(db, 'gallery', imageId));
+    }
+  };
+
+  const handleSeedProducts = async () => {
+    if (products.length > 0) {
+      if (!window.confirm('You already have products in the database. Loading defaults will duplicate them. Continue?')) return;
+    } else {
+      if (!window.confirm('This will load all default products into the database. Continue?')) return;
+    }
+    
+    setIsSeeding(true);
+    try {
+      const batch = writeBatch(db);
+      fallbackProducts.forEach(p => {
+        const docRef = doc(collection(db, 'products'));
+        batch.set(docRef, {
+          name: p.item,
+          category: p.category,
+          unit: p.unit,
+          price: p.price,
+          moq: p.moq,
+          bulkPrice: p.bulkPrice || 0
+        });
+      });
+      await batch.commit();
+      alert('Default products loaded successfully!');
+    } catch (error) {
+      console.error("Error seeding products:", error);
+      alert("Failed to load default products.");
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  const handleSeedGallery = async () => {
+    if (gallery.length > 0) {
+      if (!window.confirm('You already have images in the database. Loading defaults will duplicate them. Continue?')) return;
+    } else {
+      if (!window.confirm('This will load all default gallery images into the database. Continue?')) return;
+    }
+
+    setIsSeeding(true);
+    try {
+      const batch = writeBatch(db);
+      fallbackGalleryCategories.forEach(category => {
+        category.images.forEach(img => {
+          const docRef = doc(collection(db, 'gallery'));
+          batch.set(docRef, {
+            src: img.src,
+            alt: img.alt,
+            category: category.title
+          });
+        });
+      });
+      await batch.commit();
+      alert('Default gallery images loaded successfully!');
+    } catch (error) {
+      console.error("Error seeding gallery:", error);
+      alert("Failed to load default gallery images.");
+    } finally {
+      setIsSeeding(false);
     }
   };
 
@@ -142,11 +206,12 @@ export default function AdminDashboard() {
         unit: product.unit,
         price: product.price,
         moq: product.moq,
-        bulkPrice: product.bulkPrice || 0
+        bulkPrice: product.bulkPrice || 0,
+        imageUrl: product.imageUrl || ''
       });
     } else {
       setEditingItem(null);
-      setProductForm({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0 });
+      setProductForm({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
     }
     setIsProductModalOpen(true);
   };
@@ -169,44 +234,53 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Sidebar */}
-      <div className="w-full md:w-64 bg-slate-900 text-white flex flex-col pt-24 pb-6 px-4">
-        <div className="mb-8 px-4">
-          <h2 className="text-xl font-bold">Admin Dashboard</h2>
-          <p className="text-sm text-slate-400 truncate">{user.email}</p>
+      <div className="w-full md:w-64 bg-slate-900 text-white flex flex-col pt-24 md:h-screen md:sticky md:top-0 pb-4 md:pb-6 px-4 z-40">
+        <div className="mb-4 md:mb-8 px-2 md:px-4 flex justify-between items-center md:block">
+          <div className="overflow-hidden">
+            <h2 className="text-xl font-bold">Admin Dashboard</h2>
+            <p className="text-sm text-slate-400 truncate">{user.email}</p>
+          </div>
+          <button 
+            onClick={logout}
+            className="md:hidden flex-shrink-0 flex items-center gap-2 px-3 py-2 text-red-400 hover:bg-slate-800 rounded-lg transition-colors text-sm"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">Sign Out</span>
+          </button>
         </div>
         
-        <nav className="flex-1 space-y-2">
+        <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <button 
             onClick={() => setActiveTab('orders')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === 'orders' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+            className={`flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-colors ${activeTab === 'orders' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
           >
-            <ShoppingCart className="w-5 h-5" />
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
             Orders
             {orders.filter(o => o.status === 'pending').length > 0 && (
-              <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+              <span className="ml-1 md:ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 md:py-1 rounded-full">
                 {orders.filter(o => o.status === 'pending').length}
               </span>
             )}
           </button>
           <button 
             onClick={() => setActiveTab('products')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === 'products' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+            className={`flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-colors ${activeTab === 'products' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
           >
-            <Package className="w-5 h-5" />
+            <Package className="w-4 h-4 md:w-5 md:h-5" />
             Products
           </button>
           <button 
             onClick={() => setActiveTab('gallery')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${activeTab === 'gallery' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+            className={`flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-colors ${activeTab === 'gallery' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
           >
-            <ImageIcon className="w-5 h-5" />
+            <ImageIcon className="w-4 h-4 md:w-5 md:h-5" />
             Gallery
           </button>
         </nav>
 
         <button 
           onClick={logout}
-          className="mt-auto flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-slate-800 rounded-xl transition-colors"
+          className="hidden md:flex mt-auto items-center gap-3 px-4 py-3 text-red-400 hover:bg-slate-800 rounded-xl transition-colors"
         >
           <LogOut className="w-5 h-5" />
           Sign Out
@@ -214,7 +288,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 md:p-8 pt-24 overflow-y-auto">
+      <div className="flex-1 p-4 md:p-8 md:pt-24 overflow-y-auto">
         
         {/* Orders Tab */}
         {activeTab === 'orders' && (
@@ -280,16 +354,27 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900">Manage Products</h2>
-              <button onClick={() => openProductModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
-                <Plus className="w-4 h-4" /> Add Product
-              </button>
+              <div className="flex gap-3">
+                <button 
+                  onClick={handleSeedProducts} 
+                  disabled={isSeeding}
+                  className="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50"
+                >
+                  <Database className="w-4 h-4" /> {isSeeding ? 'Loading...' : 'Load Defaults'}
+                </button>
+                <button onClick={() => openProductModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
+                  <Plus className="w-4 h-4" /> Add Product
+                </button>
+              </div>
             </div>
             
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left text-sm text-slate-600">
                   <thead className="bg-slate-50 text-slate-900 font-medium border-b border-slate-200">
                     <tr>
+                      <th className="px-6 py-4 w-16">Image</th>
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4">Category</th>
                       <th className="px-6 py-4">Unit</th>
@@ -301,6 +386,15 @@ export default function AdminDashboard() {
                   <tbody className="divide-y divide-slate-100">
                     {products.map(product => (
                       <tr key={product.id} className="hover:bg-slate-50">
+                        <td className="px-6 py-4">
+                          {product.imageUrl ? (
+                            <img src={product.imageUrl} alt={product.name} className="w-10 h-10 object-cover rounded-lg border border-slate-200" />
+                          ) : (
+                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
+                              <ImageIcon className="w-5 h-5" />
+                            </div>
+                          )}
+                        </td>
                         <td className="px-6 py-4 font-medium text-slate-900">{product.name}</td>
                         <td className="px-6 py-4">{product.category}</td>
                         <td className="px-6 py-4">{product.unit}</td>
@@ -319,6 +413,57 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden divide-y divide-slate-100">
+                {products.map(product => (
+                  <div key={product.id} className="p-4 hover:bg-slate-50">
+                    <div className="flex justify-between items-start mb-2 gap-4">
+                      <div className="flex items-center gap-3">
+                        {product.imageUrl ? (
+                          <img src={product.imageUrl} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-slate-200 flex-shrink-0" />
+                        ) : (
+                          <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0">
+                            <ImageIcon className="w-6 h-6" />
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="font-bold text-slate-900">{product.name}</h3>
+                          <p className="text-sm text-blue-600">{product.category}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <button onClick={() => openProductModal(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDeleteProduct(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-3">
+                      <div>
+                        <span className="block text-xs text-slate-400">Price</span>
+                        <span className="font-medium text-slate-900">Ksh {product.price.toLocaleString()}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs text-slate-400">Unit</span>
+                        <span className="font-medium text-slate-900">{product.unit}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs text-slate-400">MOQ</span>
+                        <span className="font-medium text-slate-900">{product.moq}</span>
+                      </div>
+                      {product.bulkPrice > 0 && (
+                        <div>
+                          <span className="block text-xs text-slate-400">Bulk Price</span>
+                          <span className="font-medium text-slate-900">Ksh {product.bulkPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -328,9 +473,18 @@ export default function AdminDashboard() {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900">Manage Gallery</h2>
-              <button onClick={() => openGalleryModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
-                <Plus className="w-4 h-4" /> Add Image
-              </button>
+              <div className="flex gap-3">
+                <button 
+                  onClick={handleSeedGallery} 
+                  disabled={isSeeding}
+                  className="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50"
+                >
+                  <Database className="w-4 h-4" /> {isSeeding ? 'Loading...' : 'Load Defaults'}
+                </button>
+                <button onClick={() => openGalleryModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
+                  <Plus className="w-4 h-4" /> Add Image
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -378,7 +532,7 @@ export default function AdminDashboard() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
                 <input type="text" required value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
                   <input type="text" required value={productForm.unit} onChange={e => setProductForm({...productForm, unit: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
@@ -388,7 +542,7 @@ export default function AdminDashboard() {
                   <input type="number" min="1" required value={productForm.moq} onChange={e => setProductForm({...productForm, moq: Number(e.target.value)})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Price (Ksh)</label>
                   <input type="number" min="0" required value={productForm.price} onChange={e => setProductForm({...productForm, price: Number(e.target.value)})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
@@ -396,6 +550,39 @@ export default function AdminDashboard() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Bulk Price (Optional)</label>
                   <input type="number" min="0" value={productForm.bulkPrice} onChange={e => setProductForm({...productForm, bulkPrice: Number(e.target.value)})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Product Image</label>
+                <div className="mt-1 flex items-center gap-4">
+                  {productForm.imageUrl && (
+                    <img src={productForm.imageUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-slate-200" />
+                  )}
+                  <label className="cursor-pointer bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2">
+                    <Upload className="w-4 h-4" />
+                    {uploadingImage ? 'Processing...' : 'Upload Image'}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploadingImage(true);
+                        try {
+                          const { compressImage } = await import('../../utils/imageUtils');
+                          const base64Url = await compressImage(file, 800, 800, 0.7);
+                          setProductForm({ ...productForm, imageUrl: base64Url });
+                        } catch (error) {
+                          console.error("Error uploading image:", error);
+                          alert("Failed to process image.");
+                        } finally {
+                          setUploadingImage(false);
+                        }
+                      }} 
+                      disabled={uploadingImage}
+                    />
+                  </label>
                 </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">
@@ -441,7 +628,25 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                <input type="text" required value={galleryForm.category} onChange={e => setGalleryForm({...galleryForm, category: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
+                <input 
+                  type="text" 
+                  required 
+                  list="gallery-categories"
+                  value={galleryForm.category} 
+                  onChange={e => setGalleryForm({...galleryForm, category: e.target.value})} 
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" 
+                  placeholder="e.g. Hero, About, or custom category"
+                />
+                <datalist id="gallery-categories">
+                  <option value="Hero" />
+                  <option value="About" />
+                  <option value="Organizers, Storage & Filling" />
+                  <option value="Paper & Notebooks" />
+                  <option value="Writing & Pin Stationery" />
+                  <option value="Machine & Whiteboard Accessories" />
+                  <option value="Dekit Slippers" />
+                </datalist>
+                <p className="text-xs text-slate-500 mt-1">Use "Hero" or "About" to update those specific sections.</p>
               </div>
               <div className="pt-4 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsGalleryModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>

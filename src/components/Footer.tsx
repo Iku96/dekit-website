@@ -113,6 +113,7 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Dekit Traders. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
+            <Link to="/admin/login" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Admin Login</Link>
             <a href="#" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
             <a href="#" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</a>
           </div>

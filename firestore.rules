@@ -62,7 +62,7 @@ service cloud.firestore {
     }
 
     function isValidUrl(url) {
-      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+      return url is string && (url.matches("^https?://.*") || (url.size() >= 11 && url[0:11] == 'data:image/'));
     }
 
     function isPositiveNumber(field) {
@@ -80,14 +80,15 @@ service cloud.firestore {
     // Domain Validators
     function isValidProduct() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['name', 'category', 'unit', 'price', 'moq', 'bulkPrice']) &&
+      return hasOnlyAllowedFields(['name', 'category', 'unit', 'price', 'moq', 'bulkPrice', 'imageUrl']) &&
              hasRequiredFields(['name', 'category', 'unit', 'price', 'moq']) &&
              isValidString(data.name, 1, 100) &&
              isValidString(data.category, 1, 50) &&
              isValidString(data.unit, 1, 20) &&
              isPositiveNumber(data.price) &&
              isPositiveNumber(data.moq) &&
-             (!('bulkPrice' in data) || isPositiveNumber(data.bulkPrice));
+             (!('bulkPrice' in data) || isPositiveNumber(data.bulkPrice)) &&
+             (!('imageUrl' in data) || isValidUrl(data.imageUrl));
     }
 
     function isValidGalleryImage() {

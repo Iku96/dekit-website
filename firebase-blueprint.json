@@ -10,7 +10,8 @@
         "unit": { "type": "string", "description": "Unit of measure (e.g., PC, DZN)" },
         "price": { "type": "number", "description": "Price per unit" },
         "moq": { "type": "number", "description": "Minimum order quantity" },
-        "bulkPrice": { "type": "number", "description": "Wholesale bulk price" }
+        "bulkPrice": { "type": "number", "description": "Wholesale bulk price" },
+        "imageUrl": { "type": "string", "description": "Image URL or Base64 string" }
       },
       "required": ["name", "category", "unit", "price", "moq"]
     },

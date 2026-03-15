@@ -119,8 +119,15 @@ export default function AdminLogin() {
         )}
 
         {user && !isAdmin && (
-          <div className="bg-amber-50 text-amber-700 p-4 rounded-xl text-sm text-center">
-            You are logged in as {user.email || user.phoneNumber}, but you do not have admin privileges.
+          <div className="bg-amber-50 text-amber-700 p-4 rounded-xl text-sm text-center space-y-3">
+            <p>You are logged in as {user.email || user.phoneNumber}, but you do not have admin privileges.</p>
+            <p className="text-xs opacity-80">If you are the owner, please sign in with Google to automatically verify your email.</p>
+            <button
+              onClick={() => auth.signOut()}
+              className="inline-flex items-center justify-center px-4 py-2 border border-amber-300 shadow-sm text-sm font-medium rounded-lg text-amber-700 bg-white hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors"
+            >
+              Sign Out
+            </button>
           </div>
         )}
 

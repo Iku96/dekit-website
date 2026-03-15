@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, PackageOpen, ShieldCheck, TrendingUp, Sparkles, Layers } from 'lucide-react';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
 
-const heroImages = [
+const fallbackHeroImages = [
   {
     url: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
     alt: "Premium Stationery Supplies"
@@ -19,6 +21,22 @@ const heroImages = [
 
 export default function Hero() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [heroImages, setHeroImages] = useState(fallbackHeroImages);
+
+  useEffect(() => {
+    const q = query(collection(db, 'gallery'), where('category', '==', 'Hero'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        setHeroImages(snapshot.docs.map(doc => ({
+          url: doc.data().src,
+          alt: doc.data().alt || 'Hero Image'
+        })));
+      } else {
+        setHeroImages(fallbackHeroImages);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -26,7 +44,7 @@ export default function Hero() {
     }, 5000); // Change image every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages.length]);
 
   return (
     <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden bg-[#030303]">

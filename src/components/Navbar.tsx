@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const navLinks = [
+  { name: 'Home', href: '/' },
   { name: 'About', href: '/#about' },
   { name: 'Services', href: '/#services' },
   { name: 'Values', href: '/#values' },

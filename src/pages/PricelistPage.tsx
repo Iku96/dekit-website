@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Search, Filter, ShoppingCart, Check } from 'lucide-react';
+import { Search, Filter, ShoppingCart, Check, Image as ImageIcon } from 'lucide-react';
 import { products as fallbackProducts } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -17,6 +17,8 @@ export default function PricelistPage() {
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
       if (!snapshot.empty) {
         setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } else {
+        setProducts(fallbackProducts.map((p, i) => ({ id: `fallback-${i}`, ...p, name: p.item })));
       }
     });
     return () => unsubscribe();
@@ -108,10 +110,14 @@ export default function PricelistPage() {
 
         {/* Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">
                 <tr>
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider w-16">
+                    Image
+                  </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                     Category & Item
                   </th>
@@ -136,6 +142,15 @@ export default function PricelistPage() {
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product, index) => (
                     <tr key={product.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {product.imageUrl ? (
+                          <img src={product.imageUrl} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-slate-200" />
+                        ) : (
+                          <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
+                            <ImageIcon className="w-6 h-6" />
+                          </div>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="text-xs font-medium text-blue-600 mb-1">{product.category}</span>
@@ -197,7 +212,7 @@ export default function PricelistPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
                       <ShoppingCart className="mx-auto h-12 w-12 text-slate-300 mb-3" />
                       <p className="text-lg font-medium text-slate-900">No products found</p>
                       <p className="text-sm">Try adjusting your search or filters.</p>
@@ -206,6 +221,90 @@ export default function PricelistPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div key={product.id} className="p-4 hover:bg-slate-50">
+                  <div className="flex justify-between items-start mb-2 gap-4">
+                    <div className="flex items-center gap-3">
+                      {product.imageUrl ? (
+                        <img src={product.imageUrl} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-slate-200 flex-shrink-0" />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 flex-shrink-0">
+                          <ImageIcon className="w-6 h-6" />
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-xs font-medium text-blue-600 mb-1 block">{product.category}</span>
+                        <h3 className="font-bold text-slate-900">{product.name}</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-3 mb-4">
+                    <div>
+                      <span className="block text-xs text-slate-400">Price Per Unit</span>
+                      <span className="font-bold text-slate-900">{formatCurrency(product.price)}</span>
+                    </div>
+                    <div>
+                      <span className="block text-xs text-slate-400">Unit</span>
+                      <span className="inline-flex px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-800">{product.unit}</span>
+                    </div>
+                    <div>
+                      <span className="block text-xs text-slate-400">MOQ</span>
+                      <span className="font-medium text-slate-900">{product.moq}</span>
+                    </div>
+                    {product.bulkPrice > 0 && (
+                      <div>
+                        <span className="block text-xs text-slate-400">Wholesale Bulk Price</span>
+                        <span className="font-medium text-slate-900">{formatCurrency(product.bulkPrice)}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                    <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
+                      <button 
+                        onClick={() => handleQuantityChange(product.id, getQuantity(product) - product.moq, product.moq)}
+                        className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                      >
+                        -
+                      </button>
+                      <span className="w-10 text-center text-sm font-medium text-slate-700" title={`${getQuantity(product)} ${product.unit}s`}>
+                        {Math.floor(getQuantity(product) / product.moq)}
+                      </span>
+                      <button 
+                        onClick={() => handleQuantityChange(product.id, getQuantity(product) + product.moq, product.moq)}
+                        className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                        addedItems[product.id] 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'
+                      }`}
+                    >
+                      {addedItems[product.id] ? (
+                        <><Check className="w-4 h-4" /> Added</>
+                      ) : (
+                        <><ShoppingCart className="w-4 h-4" /> Add</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-slate-500">
+                <ShoppingCart className="mx-auto h-12 w-12 text-slate-300 mb-3" />
+                <p className="text-lg font-medium text-slate-900">No products found</p>
+                <p className="text-sm">Try adjusting your search or filters.</p>
+              </div>
+            )}
           </div>
           
           <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
