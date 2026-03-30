@@ -20,14 +20,14 @@ export const fallbackGalleryCategories = [
     title: 'Dekit Slippers',
     description: 'Therapeutic, non-slip, and indoor slippers designed for everyday wellness.',
     images: [
-      { src: '/dekit slipper 2.png', alt: 'Indoor Slippers' },
-      { src: '/dekit slipper 3.png', alt: 'Non-slip Soles' },
-      { src: '/dekit slipper 4.png', alt: 'Therapeutic Footwear' },
-      { src: '/dekit slipper 5.png', alt: 'Cozy Indoor Slippers' },
-      { src: '/dekit slipper 6.png', alt: 'Durable Footwear' },
-      { src: '/dekit slipper 7.png', alt: 'Everyday Indoor Slippers' },
-      { src: '/dekit slipper 8.png', alt: 'Warm Fit' },
-      { src: '/slipper 1.png', alt: 'Dekit Special' }
+      { src: '/dekit_slipper_2.webp', alt: 'Indoor Slippers' },
+      { src: '/dekit_slipper_3.webp', alt: 'Non-slip Soles' },
+      { src: '/dekit_slipper_4.webp', alt: 'Therapeutic Footwear' },
+      { src: '/dekit_slipper_5.webp', alt: 'Cozy Indoor Slippers' },
+      { src: '/dekit_slipper_6.webp', alt: 'Durable Footwear' },
+      { src: '/dekit_slipper_7.webp', alt: 'Everyday Indoor Slippers' },
+      { src: '/dekit_slipper_8.webp', alt: 'Warm Fit' },
+      { src: '/slipper_1.webp', alt: 'Dekit Special' }
     ]
   }
 ];

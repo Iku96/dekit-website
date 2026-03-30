@@ -6,15 +6,15 @@ import { db } from '../firebase';
 
 const fallbackHeroImages = [
   {
-    url: "/dekit slippers.png",
+    url: "/dekit_slippers.webp",
     alt: "Indoor Slippers"
   },
   {
-    url: "/slipper 1.png",
+    url: "/slipper_1.webp",
     alt: "Premium Indoor Slippers"
   },
   {
-    url: "/dekit slipper 4.png",
+    url: "/dekit_slipper_4.webp",
     alt: "Dekit Therapeutic Footwear"
   }
 ];

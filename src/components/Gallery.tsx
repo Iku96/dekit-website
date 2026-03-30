@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 const images = [
   {
-    src: '/dekit slipper 2.png',
+    src: '/dekit_slipper_2.webp',
     alt: 'Indoor Slippers',
     category: 'Dekit Slippers',
   },

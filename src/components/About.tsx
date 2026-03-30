@@ -6,17 +6,17 @@ import { db } from '../firebase';
 
 // You can easily change these images in the future by updating the URLs below
 const fallbackCenterSlideshowImages = [
-  "/dekit slipper 2.png",
-  "/dekit slipper 3.png",
-  "/dekit slipper 5.png",
-  "/dekit slipper 4.png"
+  "/dekit_slipper_2.webp",
+  "/dekit_slipper_3.webp",
+  "/dekit_slipper_5.webp",
+  "/dekit_slipper_4.webp"
 ];
 
 const fallbackGalleryImages = [
-  "/dekit slipper 6.png", // Top Left
-  "/dekit slipper 7.png", // Top Right
-  "/dekit slipper 8.png", // Bottom Left
-  "/slipper 1.png", // Bottom Right
+  "/dekit_slipper_6.webp", // Top Left
+  "/dekit_slipper_7.webp", // Top Right
+  "/dekit_slipper_8.webp", // Bottom Left
+  "/slipper_1.webp", // Bottom Right
 ];
 
 export default function About() {
