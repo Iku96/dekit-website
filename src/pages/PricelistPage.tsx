@@ -13,6 +13,7 @@ export default function PricelistPage() {
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
@@ -89,7 +90,10 @@ export default function PricelistPage() {
             {categories.map(cat => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setHasInteracted(true);
+                }}
                 className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base font-bold transition-all whitespace-nowrap ${
                   selectedCategory === cat 
                     ? 'bg-white text-blue-700 shadow border border-slate-100' 
@@ -109,14 +113,38 @@ export default function PricelistPage() {
               type="text"
               placeholder="Search for an item..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setHasInteracted(true)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setHasInteracted(true);
+              }}
               className="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl leading-5 bg-white shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        {/* Table Content */}
+        {!hasInteracted ? (
+          <div className="bg-white rounded-3xl p-12 border-2 border-dashed border-slate-200 text-center max-w-lg mx-auto mt-12 animate-pulse-slow">
+            <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-500">
+               <Search className="w-10 h-10" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to explore?</h3>
+            <p className="text-slate-500 mb-8">
+              Type in the search bar or select a category above to view our latest pricelist and inventory.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 uppercase tracking-widest">
+              <span>Start searching</span>
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0s' }}></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
@@ -332,6 +360,7 @@ export default function PricelistPage() {
             </div>
           </div>
         </div>
+      )}
 
       </div>
     </div>
