@@ -6,16 +6,20 @@ import { db } from '../firebase';
 
 const fallbackHeroImages = [
   {
-    url: "/dekit_slippers.webp",
-    alt: "Indoor Slippers"
+    url: "/dekit_stationery_1.webp",
+    alt: "Premium Office Stationery"
   },
   {
-    url: "/slipper_1.webp",
-    alt: "Premium Indoor Slippers"
+    url: "/dekit_stationery_2.webp",
+    alt: "Complete Organizing Solutions"
   },
   {
     url: "/dekit_slipper_4.webp",
-    alt: "Dekit Therapeutic Footwear"
+    alt: "Therapeutic Indoor Slippers"
+  },
+  {
+    url: "/dekit_stationery_5.webp",
+    alt: "Wholesale Office Supplies"
   }
 ];
 

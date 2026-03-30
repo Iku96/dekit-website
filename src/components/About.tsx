@@ -6,17 +6,17 @@ import { db } from '../firebase';
 
 // You can easily change these images in the future by updating the URLs below
 const fallbackCenterSlideshowImages = [
-  "/dekit_slipper_2.webp",
+  "/dekit_stationery_3.webp",
+  "/dekit_stationery_4.webp",
   "/dekit_slipper_3.webp",
-  "/dekit_slipper_5.webp",
-  "/dekit_slipper_4.webp"
+  "/dekit_stationery_6.webp"
 ];
 
 const fallbackGalleryImages = [
-  "/dekit_slipper_6.webp", // Top Left
-  "/dekit_slipper_7.webp", // Top Right
-  "/dekit_slipper_8.webp", // Bottom Left
-  "/slipper_1.webp", // Bottom Right
+  "/dekit_stationery_7.webp", // Top Left
+  "/dekit_stationery_8.webp", // Top Right
+  "/dekit_stationery_9.webp", // Bottom Left
+  "/dekit_slipper_7.webp", // Bottom Right
 ];
 
 export default function About() {
@@ -81,6 +81,22 @@ export default function About() {
             <p className="text-lg text-slate-600 leading-relaxed mb-8">
               Dekit Traders is a solution-oriented enterprise dedicated to streamlining the supply chain. By prioritizing quality and reliability, we ensure that high-standard products reach the end-user with efficiency and integrity.
             </p>
+
+            <div className="bg-slate-50 border border-slate-100 p-6 rounded-2xl mb-8">
+              <p className="text-sm text-slate-500 leading-relaxed mb-4">
+                Dekit Traders has been duly registered pursuant to and in accordance with the provisions of the Business Names (Registration) Act and the Rules made thereunder, and has been entered in the Number 624105 in the Index of Registration.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+                <div>
+                  <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Business License No</span>
+                  <span className="text-sm font-medium text-slate-900 font-mono">BL01396912025-2600025809</span>
+                </div>
+                <div>
+                  <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">TIN No</span>
+                  <span className="text-sm font-medium text-slate-900 font-mono">132-007-594</span>
+                </div>
+              </div>
+            </div>
             
             <div className="space-y-6">
               <div className="flex items-start gap-4">

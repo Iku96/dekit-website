@@ -120,7 +120,14 @@ export default function AdminDashboard() {
     setUploadingImage(true);
     try {
       const { compressImage } = await import('../../utils/imageUtils');
-      const base64Url = await compressImage(file, 800, 800, 0.7);
+      const base64Url = await compressImage(file);
+      
+      // Firestore strict limit is 1MB. Base64 strings over this will fail.
+      if (base64Url.length > 950000) {
+        alert("Image is still too large after compression (over 1MB limit). Please select a less complex image.");
+        return;
+      }
+      
       setGalleryForm({ ...galleryForm, src: base64Url });
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -571,7 +578,13 @@ export default function AdminDashboard() {
                         setUploadingImage(true);
                         try {
                           const { compressImage } = await import('../../utils/imageUtils');
-                          const base64Url = await compressImage(file, 800, 800, 0.7);
+                          const base64Url = await compressImage(file);
+                          
+                          if (base64Url.length > 950000) {
+                            alert("Image is still too large after compression (over 1MB limit). Please select a less complex image.");
+                            return;
+                          }
+                          
                           setProductForm({ ...productForm, imageUrl: base64Url });
                         } catch (error) {
                           console.error("Error uploading image:", error);

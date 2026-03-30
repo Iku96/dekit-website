@@ -1,4 +1,4 @@
-export const compressImage = (file: File, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<string> => {
+export const compressImage = (file: File, maxWidth = 600, maxHeight = 600, quality = 0.6): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -30,7 +30,8 @@ export const compressImage = (file: File, maxWidth = 800, maxHeight = 800, quali
           return;
         }
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        // Force WebP for aggressive compression suitable for Firestore Base64 free-tier limits
+        resolve(canvas.toDataURL('image/webp', quality));
       };
       img.onerror = (error) => reject(error);
     };
