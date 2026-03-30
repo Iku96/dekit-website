@@ -6,17 +6,17 @@ import { db } from '../firebase';
 
 // You can easily change these images in the future by updating the URLs below
 const fallbackCenterSlideshowImages = [
-  "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-  "https://images.unsplash.com/photo-1556761175-4b46a572b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
-  "https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+  "/dekit slipper 2.png",
+  "/dekit slipper 3.png",
+  "/dekit slipper 5.png",
+  "/dekit slipper 4.png"
 ];
 
 const fallbackGalleryImages = [
-  "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Top Left
-  "https://images.unsplash.com/photo-1553413077-190dd305871c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Top Right
-  "https://images.unsplash.com/photo-1578575437130-527eed3abbec?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Bottom Left
-  "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Bottom Right
+  "/dekit slipper 6.png", // Top Left
+  "/dekit slipper 7.png", // Top Right
+  "/dekit slipper 8.png", // Bottom Left
+  "/slipper 1.png", // Bottom Right
 ];
 
 export default function About() {

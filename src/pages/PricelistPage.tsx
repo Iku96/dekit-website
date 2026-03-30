@@ -12,6 +12,7 @@ export default function PricelistPage() {
   const { addToCart } = useCart();
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
@@ -33,6 +34,10 @@ export default function PricelistPage() {
       return matchesSearch && matchesCategory;
     });
   }, [searchTerm, selectedCategory, products]);
+
+  const paginatedProducts = useMemo(() => {
+    return filteredProducts.slice(0, itemsPerPage);
+  }, [filteredProducts, itemsPerPage]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS' }).format(amount);
@@ -139,8 +144,8 @@ export default function PricelistPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
-                {filteredProducts.length > 0 ? (
-                  filteredProducts.map((product, index) => (
+                {paginatedProducts.length > 0 ? (
+                  paginatedProducts.map((product, index) => (
                     <tr key={product.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         {product.imageUrl ? (
@@ -225,8 +230,8 @@ export default function PricelistPage() {
 
           {/* Mobile Cards */}
           <div className="md:hidden divide-y divide-slate-100">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
+            {paginatedProducts.length > 0 ? (
+              paginatedProducts.map((product) => (
                 <div key={product.id} className="p-4 hover:bg-slate-50">
                   <div className="flex justify-between items-start mb-2 gap-4">
                     <div className="flex items-center gap-3">
@@ -307,10 +312,22 @@ export default function PricelistPage() {
             )}
           </div>
           
-          <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+          <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="text-sm text-slate-500">
-              Showing <span className="font-medium text-slate-900">{filteredProducts.length}</span> products
+              Showing <span className="font-medium text-slate-900">{paginatedProducts.length}</span> of <span className="font-medium text-slate-900">{filteredProducts.length}</span> products
             </span>
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <span>Show:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="pl-3 pr-8 py-1.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none"
+              >
+                {[10, 25, 50, 100].map(val => (
+                  <option key={val} value={val}>{val} items</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 

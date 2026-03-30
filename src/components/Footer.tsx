@@ -1,4 +1,4 @@
-import { Globe, Facebook, Twitter, Instagram, Linkedin, FileText } from 'lucide-react';
+import { Globe, Instagram, Linkedin, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -18,13 +18,10 @@ export default function Footer() {
               Bridging the gap between producers and consumers with dependable service solutions.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
-                <Facebook className="w-4 h-4" />
+              <a href="https://instagram.com/dekitslippers" target="_blank" rel="noopener noreferrer" title="@dekitslippers" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
+                <Instagram className="w-4 h-4" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition-all duration-300">
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
+              <a href="https://instagram.com/dekitstationers" target="_blank" rel="noopener noreferrer" title="@dekitstationers" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
                 <Instagram className="w-4 h-4" />
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white transition-all duration-300">

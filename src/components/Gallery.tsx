@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 const images = [
   {
-    src: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    src: '/dekit slipper 2.png',
     alt: 'Comfort Footwear',
     category: 'Dekit Slippers',
   },

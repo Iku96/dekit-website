@@ -6,16 +6,16 @@ import { db } from '../firebase';
 
 const fallbackHeroImages = [
   {
-    url: "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    alt: "Premium Stationery Supplies"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    alt: "Office Equipment and Supplies"
-  },
-  {
-    url: "https://images.unsplash.com/photo-1603487742131-4160ec999306?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    url: "/dekit slippers.png",
     alt: "Comfortable Footwear and Slippers"
+  },
+  {
+    url: "/slipper 1.png",
+    alt: "Premium Comfort Slippers"
+  },
+  {
+    url: "/dekit slipper 4.png",
+    alt: "Dekit Therapeutic Footwear"
   }
 ];
 
