@@ -21,7 +21,7 @@ export default function PricelistCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all flex flex-col items-center text-center"
+            className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-200 shadow-md hover:shadow-xl hover:border-blue-100 transition-all flex flex-col items-center text-center"
           >
             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <FileText className="w-8 h-8" />
@@ -42,7 +42,7 @@ export default function PricelistCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-100 hover:shadow-xl hover:border-blue-100 transition-all flex flex-col items-center text-center"
+            className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-200 shadow-md hover:shadow-xl hover:border-blue-100 transition-all flex flex-col items-center text-center"
           >
             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <FileText className="w-8 h-8" />

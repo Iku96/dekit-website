@@ -25,12 +25,12 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-2 space-y-8"
           >
-            <div className="bg-slate-50 rounded-[2rem] p-8 md:p-10 border border-slate-100">
+            <div className="bg-slate-50 rounded-[2rem] p-8 md:p-10 border border-slate-200 shadow-sm">
               <h4 className="text-2xl font-bold text-slate-900 mb-8">Contact Information</h4>
               
               <div className="space-y-8">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100">
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
                     <MapPin className="w-6 h-6" />
                   </div>
                   <div>
@@ -44,7 +44,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100">
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
@@ -56,7 +56,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-white text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-slate-100">
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
                     <Mail className="w-6 h-6" />
                   </div>
                   <div>
@@ -76,7 +76,7 @@ export default function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-3 bg-white rounded-[2rem] p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100"
+            className="lg:col-span-3 bg-white rounded-[2rem] p-8 md:p-12 shadow-xl border border-slate-200"
           >
             <h4 className="text-2xl font-bold text-slate-900 mb-8">Send us a Message</h4>
             

@@ -40,7 +40,7 @@ export default function PricelistPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+  const categories: string[] = ['All', ...Array.from(new Set(products.map(p => p.category as string)))];
 
   // Suggestions based on what user is typing (live filtering)
   const suggestions = useMemo(() => {
@@ -213,7 +213,7 @@ export default function PricelistPage() {
 
         {/* Content Area */}
         {!showResults ? (
-          <div className="bg-white rounded-3xl p-12 border-2 border-dashed border-slate-200 text-center max-w-lg mx-auto mt-12">
+          <div className="bg-slate-50/50 rounded-3xl p-12 border-2 border-dashed border-slate-300 text-center max-w-lg mx-auto mt-12">
             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-500">
                <Search className="w-10 h-10" />
             </div>

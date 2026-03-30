@@ -82,7 +82,7 @@ export default function About() {
               Dekit Traders is a solution-oriented enterprise dedicated to streamlining the supply chain. By prioritizing quality and reliability, we ensure that high-standard products reach the end-user with efficiency and integrity.
             </p>
 
-            <div className="bg-slate-50 border border-slate-100 p-6 rounded-2xl mb-8">
+            <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl mb-8 shadow-sm">
               <p className="text-sm text-slate-500 leading-relaxed mb-4">
                 Dekit Traders has been duly registered pursuant to and in accordance with the provisions of the Business Names (Registration) Act and the Rules made thereunder, and has been entered in the Number 624105 in the Index of Registration.
               </p>
@@ -100,7 +100,7 @@ export default function About() {
             
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600 border border-blue-100">
                   <Target className="w-6 h-6" />
                 </div>
                 <div>
@@ -110,7 +110,7 @@ export default function About() {
               </div>
               
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600 border border-indigo-100">
                   <Compass className="w-6 h-6" />
                 </div>
                 <div>
@@ -212,7 +212,7 @@ export default function About() {
               <motion.div 
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -left-6 sm:-left-10 bg-white p-5 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-4 z-40"
+                className="absolute -bottom-6 -left-6 sm:-left-10 bg-white p-5 rounded-2xl shadow-xl border border-slate-200 flex items-center gap-4 z-40"
               >
                 <div className="bg-blue-50 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center">
                   <CheckCircle2 className="w-6 h-6" />
