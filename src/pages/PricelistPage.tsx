@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, Filter, ShoppingCart, Check, Image as ImageIcon } from 'lucide-react';
 import { products as fallbackProducts } from '../data/products';
 import { useCart } from '../context/CartContext';
@@ -7,13 +7,16 @@ import { db } from '../firebase';
 
 export default function PricelistPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeSearch, setActiveSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [products, setProducts] = useState<any[]>(fallbackProducts.map((p, i) => ({ id: `fallback-${i}`, ...p, name: p.item })));
   const { addToCart } = useCart();
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
@@ -26,15 +29,38 @@ export default function PricelistPage() {
     return () => unsubscribe();
   }, []);
 
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
+  // Suggestions based on what user is typing (live filtering)
+  const suggestions = useMemo(() => {
+    if (searchTerm.length === 0) {
+      // Show popular/sample items when focused but nothing typed
+      return products.slice(0, 6);
+    }
+    return products.filter(p =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 8);
+  }, [searchTerm, products]);
+
+  // Actual filtered results (only used when showResults is true)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = activeSearch === '' || product.name.toLowerCase().includes(activeSearch.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory, products]);
+  }, [activeSearch, selectedCategory, products]);
 
   const paginatedProducts = useMemo(() => {
     return filteredProducts.slice(0, itemsPerPage);
@@ -71,6 +97,27 @@ export default function PricelistPage() {
     }, 2000);
   };
 
+  const handleSelectSuggestion = (productName: string) => {
+    setSearchTerm(productName);
+    setActiveSearch(productName);
+    setShowSuggestions(false);
+    setShowResults(true);
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchTerm.trim().length > 0) {
+      setActiveSearch(searchTerm);
+      setShowSuggestions(false);
+      setShowResults(true);
+    }
+  };
+
+  const handleCategoryClick = (cat: string) => {
+    setSelectedCategory(cat);
+    setShowResults(true);
+    setShowSuggestions(false);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,12 +137,9 @@ export default function PricelistPage() {
             {categories.map(cat => (
               <button
                 key={cat}
-                onClick={() => {
-                  setSelectedCategory(cat);
-                  setHasInteracted(true);
-                }}
+                onClick={() => handleCategoryClick(cat)}
                 className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base font-bold transition-all whitespace-nowrap ${
-                  selectedCategory === cat 
+                  selectedCategory === cat && showResults
                     ? 'bg-white text-blue-700 shadow border border-slate-100' 
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-300/50'
                 }`}
@@ -105,27 +149,71 @@ export default function PricelistPage() {
             ))}
           </div>
 
-          <div className="relative w-full max-w-md">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          {/* Search with Suggestions Dropdown */}
+          <div className="relative w-full max-w-md" ref={searchRef}>
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
               <Search className="h-5 w-5 text-slate-400" />
             </div>
             <input
               type="text"
               placeholder="Search for an item..."
               value={searchTerm}
-              onFocus={() => setHasInteracted(true)}
+              onFocus={() => setShowSuggestions(true)}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
-                setHasInteracted(true);
+                setShowSuggestions(true);
+                // If user clears the search, hide results
+                if (e.target.value === '') {
+                  setActiveSearch('');
+                  setShowResults(false);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearchSubmit();
+                }
               }}
               className="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl leading-5 bg-white shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
+
+            {/* Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50">
+                <div className="px-4 py-2 border-b border-slate-100">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    {searchTerm.length > 0 ? 'Matching Items' : 'Popular Items'}
+                  </span>
+                </div>
+                {suggestions.map((product, index) => (
+                  <button
+                    key={product.id || index}
+                    onClick={() => handleSelectSuggestion(product.name)}
+                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors flex items-center gap-3 border-b border-slate-50 last:border-b-0"
+                  >
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover border border-slate-200" />
+                    ) : (
+                      <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300">
+                        <ImageIcon className="w-4 h-4" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-slate-900 truncate">{product.name}</div>
+                      <div className="text-xs text-slate-400">{product.category}</div>
+                    </div>
+                    <span className="text-sm font-semibold text-blue-600 whitespace-nowrap">
+                      {formatCurrency(product.price)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Table Content */}
-        {!hasInteracted ? (
-          <div className="bg-white rounded-3xl p-12 border-2 border-dashed border-slate-200 text-center max-w-lg mx-auto mt-12 animate-pulse-slow">
+        {/* Content Area */}
+        {!showResults ? (
+          <div className="bg-white rounded-3xl p-12 border-2 border-dashed border-slate-200 text-center max-w-lg mx-auto mt-12">
             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-500">
                <Search className="w-10 h-10" />
             </div>
@@ -360,7 +448,7 @@ export default function PricelistPage() {
             </div>
           </div>
         </div>
-      )}
+        )}
 
       </div>
     </div>

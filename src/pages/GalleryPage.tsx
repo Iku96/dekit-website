@@ -5,7 +5,7 @@ import { db } from '../firebase';
 
 export const fallbackGalleryCategories = [
   {
-    title: 'Dekit Stationeries',
+    title: 'Dekit Stationery',
     description: 'High-quality office stationery, from paper and notebooks to robust office equipment.',
     images: [
       { src: '/dekit_stationery_1.webp', alt: 'Premium Office Stationery' },

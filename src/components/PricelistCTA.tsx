@@ -47,7 +47,7 @@ export default function PricelistCTA() {
             <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <FileText className="w-8 h-8" />
             </div>
-            <h4 className="text-2xl font-bold text-slate-900 mb-3">Dekit Stationers</h4>
+            <h4 className="text-2xl font-bold text-slate-900 mb-3">Dekit Stationery</h4>
             <p className="text-slate-600 mb-8">
               Wholesale rates for our comprehensive range of office and educational supplies.
             </p>

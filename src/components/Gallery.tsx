@@ -6,12 +6,12 @@ const images = [
   {
     src: '/dekit_stationery_1.webp',
     alt: 'Premium Office Stationery',
-    category: 'Dekit Stationers',
+    category: 'Dekit Stationery',
   },
   {
     src: '/dekit_stationery_3.webp',
     alt: 'Notebooks & Paper',
-    category: 'Dekit Stationers',
+    category: 'Dekit Stationery',
   },
   {
     src: '/dekit_slipper_2.webp',

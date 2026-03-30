@@ -61,7 +61,7 @@ export default function Services() {
             </div>
           </motion.div>
 
-          {/* Dekit Stationers */}
+          {/* Dekit Stationery */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -76,7 +76,7 @@ export default function Services() {
               <div className="w-16 h-16 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center mb-8 border border-cyan-500/20 group-hover:scale-110 transition-transform duration-500">
                 <PenTool className="w-8 h-8" />
               </div>
-              <h4 className="text-2xl font-bold text-white mb-4">Dekit Stationers</h4>
+              <h4 className="text-2xl font-bold text-white mb-4">Dekit Stationery</h4>
               <p className="text-slate-400 leading-relaxed mb-8">
                 In our stationery division, we serve as a dependable partner for corporate and educational environments. We focus on the wholesale supply of office stationery, providing businesses with a comprehensive range of high-quality tools.
               </p>

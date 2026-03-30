@@ -57,7 +57,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link to="/#services" className="group flex flex-col">
-                    <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Stationers</span>
+                    <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Stationery</span>
                     <span className="text-xs text-slate-500 mt-1">Wholesale Office Supply</span>
                   </Link>
                 </li>

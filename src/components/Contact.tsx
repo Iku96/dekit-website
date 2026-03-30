@@ -120,7 +120,7 @@ export default function Contact() {
                 >
                   <option value="">Select a subject...</option>
                   <option value="slippers">Dekit Slippers Inquiry</option>
-                  <option value="stationery">Dekit Stationers Inquiry</option>
+                  <option value="stationery">Dekit Stationery Inquiry</option>
                   <option value="partnership">Partnership Opportunities</option>
                   <option value="other">Other</option>
                 </select>
