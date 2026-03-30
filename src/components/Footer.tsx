@@ -38,10 +38,8 @@ export default function Footer() {
               <ul className="space-y-4">
                 <li><Link to="/#about" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> About Us</Link></li>
                 <li><Link to="/#services" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Our Services</Link></li>
-                <li><Link to="/#values" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Core Values</Link></li>
                 <li><Link to="/pricelist" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Pricelist</Link></li>
-                <li><Link to="/#gallery" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Gallery</Link></li>
-                <li><Link to="/#contact" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Contact Us</Link></li>
+                <li><Link to="/gallery" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Gallery</Link></li>
               </ul>
             </div>
 

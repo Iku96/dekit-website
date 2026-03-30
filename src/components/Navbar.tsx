@@ -8,10 +8,8 @@ const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/#about' },
   { name: 'Services', href: '/#services' },
-  { name: 'Values', href: '/#values' },
   { name: 'Pricelist', href: '/pricelist' },
-  { name: 'Gallery', href: '/#gallery' },
-  { name: 'Contact', href: '/#contact' },
+  { name: 'Gallery', href: '/gallery' },
 ];
 
 export default function Navbar() {
