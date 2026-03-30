@@ -26,8 +26,10 @@ const values = [
 
 export default function Values() {
   return (
-    <section id="values" className="py-24 bg-slate-50 relative overflow-hidden">
-      {/* Decorative background */}
+    <section id="values" className="py-24 bg-gradient-to-b from-white to-slate-100 relative overflow-hidden">
+      {/* Decorative background gradients */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-100/30 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-rose-100/20 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-100/50 via-transparent to-transparent"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -48,9 +50,9 @@ export default function Values() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-2 bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 group"
+            className="lg:col-span-2 bg-blue-50/50 rounded-3xl p-8 sm:p-10 border border-blue-100 shadow-md hover:shadow-xl transition-all duration-300 group"
           >
-            <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-blue-100">
+            <div className="w-14 h-14 bg-white text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm border border-blue-100">
               <Shield className="w-7 h-7" />
             </div>
             <h4 className="text-2xl font-bold text-slate-900 mb-4">Honesty & Integrity</h4>
@@ -65,9 +67,9 @@ export default function Values() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 group"
+            className="bg-rose-50/50 rounded-3xl p-8 border border-rose-100 shadow-md hover:shadow-xl transition-all duration-300 group"
           >
-            <div className="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-rose-100">
+            <div className="w-12 h-12 bg-white text-rose-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm border border-rose-100">
               <Heart className="w-6 h-6" />
             </div>
             <h4 className="text-xl font-bold text-slate-900 mb-3">Customer-Centric</h4>
@@ -82,9 +84,9 @@ export default function Values() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white rounded-3xl p-8 border border-slate-200 shadow-md hover:shadow-xl transition-all duration-300 group"
+            className="bg-emerald-50/50 rounded-3xl p-8 border border-emerald-100 shadow-md hover:shadow-xl transition-all duration-300 group"
           >
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-emerald-100">
+            <div className="w-12 h-12 bg-white text-emerald-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm border border-emerald-100">
               <Clock className="w-6 h-6" />
             </div>
             <h4 className="text-xl font-bold text-slate-900 mb-3">Reliability</h4>

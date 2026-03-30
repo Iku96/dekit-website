@@ -25,17 +25,21 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-2 space-y-8"
           >
-            <div className="bg-slate-50 rounded-[2rem] p-8 md:p-10 border border-slate-200 shadow-sm">
-              <h4 className="text-2xl font-bold text-slate-900 mb-8">Contact Information</h4>
+            <div className="bg-slate-900 rounded-[2rem] p-8 md:p-10 border border-white/5 shadow-2xl relative overflow-hidden group">
+              {/* Decorative Glow */}
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-colors duration-500"></div>
+              
+              <h4 className="text-2xl font-bold text-white mb-8 relative z-10">Contact Information</h4>
+
               
               <div className="space-y-8">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
                     <MapPin className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 mb-1">Our Location</h5>
-                    <p className="text-slate-600 leading-relaxed">
+                    <h5 className="font-bold text-white mb-1">Our Location</h5>
+                    <p className="text-slate-400 leading-relaxed">
                       Noble Center Victoria<br />
                       Dar es Salaam, Tanzania<br />
                       P.O Box 14774
@@ -43,26 +47,26 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
                     <Phone className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 mb-1">Phone Number</h5>
-                    <p className="text-slate-600">
-                      <a href="tel:+255655270669" className="hover:text-blue-600 transition-colors">+255 655 270 669</a>
+                    <h5 className="font-bold text-white mb-1">Phone Number</h5>
+                    <p className="text-slate-400">
+                      <a href="tel:+255655270669" className="hover:text-blue-400 transition-colors">+255 655 270 669</a>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
                     <Mail className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 mb-1">Email Address</h5>
-                    <p className="text-slate-600">
-                      <a href="mailto:info@dekit.co.tz" className="hover:text-blue-600 transition-colors">info@dekit.co.tz</a>
+                    <h5 className="font-bold text-white mb-1">Email Address</h5>
+                    <p className="text-slate-400">
+                      <a href="mailto:info@dekit.co.tz" className="hover:text-blue-400 transition-colors">info@dekit.co.tz</a>
                     </p>
                   </div>
                 </div>
