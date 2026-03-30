@@ -50,7 +50,7 @@ export default function Footer() {
               <li>
                 <Link to="/#services" className="group flex flex-col">
                   <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Slippers</span>
-                  <span className="text-xs text-slate-500 mt-1">Specialized Comfort Footwear</span>
+                  <span className="text-xs text-slate-500 mt-1">Specialized Indoor Slippers</span>
                 </Link>
               </li>
               <li>

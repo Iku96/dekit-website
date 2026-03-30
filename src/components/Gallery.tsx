@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 const images = [
   {
     src: '/dekit slipper 2.png',
-    alt: 'Comfort Footwear',
+    alt: 'Indoor Slippers',
     category: 'Dekit Slippers',
   },
   {
@@ -31,7 +31,7 @@ export default function Gallery() {
           <h2 className="text-sm font-bold tracking-widest text-blue-500 uppercase mb-3">Our Work</h2>
           <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Gallery</h3>
           <p className="text-lg text-slate-400 leading-relaxed">
-            A glimpse into our high-quality products, from specialized comfort footwear to essential office stationery.
+            A glimpse into our high-quality products, from specialized indoor slippers to essential office stationery.
           </p>
         </div>
 

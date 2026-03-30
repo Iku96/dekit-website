@@ -18,14 +18,14 @@ export const fallbackGalleryCategories = [
   },
   {
     title: 'Dekit Slippers',
-    description: 'Therapeutic, non-slip, and comfort footwear designed for everyday wellness.',
+    description: 'Therapeutic, non-slip, and indoor slippers designed for everyday wellness.',
     images: [
-      { src: '/dekit slipper 2.png', alt: 'Comfort Slippers' },
+      { src: '/dekit slipper 2.png', alt: 'Indoor Slippers' },
       { src: '/dekit slipper 3.png', alt: 'Non-slip Soles' },
       { src: '/dekit slipper 4.png', alt: 'Therapeutic Footwear' },
       { src: '/dekit slipper 5.png', alt: 'Cozy Indoor Slippers' },
       { src: '/dekit slipper 6.png', alt: 'Durable Footwear' },
-      { src: '/dekit slipper 7.png', alt: 'Everyday Comfort' },
+      { src: '/dekit slipper 7.png', alt: 'Everyday Indoor Slippers' },
       { src: '/dekit slipper 8.png', alt: 'Warm Fit' },
       { src: '/slipper 1.png', alt: 'Dekit Special' }
     ]
@@ -71,7 +71,7 @@ export default function GalleryPage() {
         <div className="mb-16 text-center max-w-3xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Product Gallery</h1>
           <p className="text-lg text-slate-600">
-            Explore our wide range of products. From essential office stationery to specialized comfort footwear, we provide high-quality solutions for your needs.
+            Explore our wide range of products. From essential office stationery to specialized indoor slippers, we provide high-quality solutions for your needs.
           </p>
         </div>
 

@@ -7,11 +7,11 @@ import { db } from '../firebase';
 const fallbackHeroImages = [
   {
     url: "/dekit slippers.png",
-    alt: "Comfortable Footwear and Slippers"
+    alt: "Indoor Slippers"
   },
   {
     url: "/slipper 1.png",
-    alt: "Premium Comfort Slippers"
+    alt: "Premium Indoor Slippers"
   },
   {
     url: "/dekit slipper 4.png",

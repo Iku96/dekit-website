@@ -16,7 +16,7 @@ export default function Services() {
           <h2 className="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3">What We Do</h2>
           <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Our Core Divisions</h3>
           <p className="text-lg text-slate-400 leading-relaxed">
-            We specialize in two core divisions: Specialized Comfort Footwear and Wholesale Office Stationery Supply.
+            We specialize in two core divisions: Specialized Indoor Slippers and Wholesale Office Stationery Supply.
           </p>
         </div>
 
