@@ -14,8 +14,8 @@ const fallbackHeroImages = [
     alt: "Complete Organizing Solutions"
   },
   {
-    url: "/dekit_slipper_4.webp",
-    alt: "Therapeutic Indoor Slippers"
+    url: "/dekit_stationery_3.webp",
+    alt: "Quality Paper & Notebooks"
   },
   {
     url: "/dekit_stationery_5.webp",
