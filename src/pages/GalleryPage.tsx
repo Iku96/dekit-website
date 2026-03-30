@@ -8,12 +8,16 @@ export const fallbackGalleryCategories = [
     title: 'Dekit Stationeries',
     description: 'High-quality office stationery, from paper and notebooks to robust office equipment.',
     images: [
-      { src: 'https://images.unsplash.com/photo-1512314889357-e157c22f938d?auto=format&fit=crop&w=800&q=80', alt: 'Metal Desk Organizer' },
-      { src: 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?auto=format&fit=crop&w=800&q=80', alt: 'Stack of Notebooks' },
-      { src: 'https://images.unsplash.com/photo-1503694978374-8a2fa686963a?auto=format&fit=crop&w=800&q=80', alt: 'Premium Pens and Markers' },
-      { src: 'https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&w=800&q=80', alt: 'Calculators & Tools' },
-      { src: 'https://images.unsplash.com/photo-1585408463514-996160166271?auto=format&fit=crop&w=800&q=80', alt: 'Filing and Folders' },
-      { src: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=800&q=80', alt: 'Bulk Paper Supplies' }
+      { src: '/dekit_stationery_1.webp', alt: 'Premium Office Stationery' },
+      { src: '/dekit_stationery_2.webp', alt: 'Organizing Solutions' },
+      { src: '/dekit_stationery_3.webp', alt: 'Notebooks & Paper' },
+      { src: '/dekit_stationery_4.webp', alt: 'Pens & Writing Tools' },
+      { src: '/dekit_stationery_5.webp', alt: 'Wholesale Office Supplies' },
+      { src: '/dekit_stationery_6.webp', alt: 'Filing & Folders' },
+      { src: '/dekit_stationery_7.webp', alt: 'Desk Accessories' },
+      { src: '/dekit_stationery_8.webp', alt: 'Bulk Stationery Packs' },
+      { src: '/dekit_stationery_9.webp', alt: 'Calculators & Tools' },
+      { src: '/dekit_stationery_10.webp', alt: 'Complete Office Kits' }
     ]
   },
   {

@@ -4,19 +4,19 @@ import { ArrowRight } from 'lucide-react';
 
 const images = [
   {
+    src: '/dekit_stationery_1.webp',
+    alt: 'Premium Office Stationery',
+    category: 'Dekit Stationers',
+  },
+  {
+    src: '/dekit_stationery_3.webp',
+    alt: 'Notebooks & Paper',
+    category: 'Dekit Stationers',
+  },
+  {
     src: '/dekit_slipper_2.webp',
     alt: 'Indoor Slippers',
     category: 'Dekit Slippers',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    alt: 'Office Stationery',
-    category: 'Dekit Stationers',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    alt: 'Notebooks & Paper',
-    category: 'Dekit Stationers',
   }
 ];
 
