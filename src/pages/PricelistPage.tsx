@@ -83,33 +83,35 @@ export default function PricelistPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-grow">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <div className="flex flex-col gap-6 mb-8">
+          {/* Category Tabs */}
+          <div className="flex bg-slate-200 p-1.5 rounded-xl self-start w-full sm:w-auto overflow-x-auto shadow-inner">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base font-bold transition-all whitespace-nowrap ${
+                  selectedCategory === cat 
+                    ? 'bg-white text-blue-700 shadow border border-slate-100' 
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-300/50'
+                }`}
+              >
+                {cat === 'All' ? 'All Products' : cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative w-full max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-slate-400" />
             </div>
             <input
               type="text"
-              placeholder="Search items..."
+              placeholder="Search for an item..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
+              className="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl leading-5 bg-white shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
-          </div>
-          
-          <div className="relative sm:w-64 shrink-0">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Filter className="h-5 w-5 text-slate-400" />
-            </div>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors appearance-none"
-            >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
           </div>
         </div>
 
