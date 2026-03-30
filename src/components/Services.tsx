@@ -16,57 +16,17 @@ export default function Services() {
           <h2 className="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3">What We Do</h2>
           <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Our Core Divisions</h3>
           <p className="text-lg text-slate-400 leading-relaxed">
-            We specialize in two core divisions: Specialized Indoor Slippers and Wholesale Office Stationery Supply.
+            We specialize in two core divisions: Wholesale Office Stationery Supply and Specialized Indoor Slippers.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Dekit Slippers */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="group relative bg-[#111827]/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/5 hover:border-blue-500/30 transition-all duration-500 overflow-hidden"
-          >
-            {/* Hover Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:scale-110 transition-transform duration-500">
-                <Footprints className="w-8 h-8" />
-              </div>
-              <h4 className="text-2xl font-bold text-white mb-4">Dekit Slippers</h4>
-              <p className="text-slate-400 leading-relaxed mb-8">
-                Our footwear line, Dekit Indoor Slippers, is thoughtfully designed to provide therapeutic relief and safety. We prioritize the needs of diabetic patients and pregnant women by offering slippers with extra cushioning, non-slip soles, and seamless interiors.
-              </p>
-              
-              <div className="bg-black/30 rounded-2xl p-6 border border-white/5">
-                <h5 className="font-bold text-white mb-4">Why choose Our Slippers?</h5>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Non-Slip Safety:</strong> High traction soles for tiled floors</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Circulation Support:</strong> Non-constricting fit for swollen feet</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Therapeutic Relief:</strong> Extra cushioning and seamless interiors</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
           {/* Dekit Stationery */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
             className="group relative bg-[#111827]/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/5 hover:border-cyan-500/30 transition-all duration-500 overflow-hidden"
           >
             {/* Hover Glow */}
@@ -95,6 +55,46 @@ export default function Services() {
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
                     <span className="text-slate-300"><strong className="font-semibold text-white">Competitive Rates:</strong> High-quality tools at affordable prices</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Dekit Slippers */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="group relative bg-[#111827]/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/5 hover:border-blue-500/30 transition-all duration-500 overflow-hidden"
+          >
+            {/* Hover Glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:scale-110 transition-transform duration-500">
+                <Footprints className="w-8 h-8" />
+              </div>
+              <h4 className="text-2xl font-bold text-white mb-4">Dekit Slippers</h4>
+              <p className="text-slate-400 leading-relaxed mb-8">
+                Our footwear line, Dekit Indoor Slippers, is thoughtfully designed to provide therapeutic relief and safety. We prioritize the needs of diabetic patients and pregnant women by offering slippers with extra cushioning, non-slip soles, and seamless interiors.
+              </p>
+              
+              <div className="bg-black/30 rounded-2xl p-6 border border-white/5">
+                <h5 className="font-bold text-white mb-4">Why choose Our Slippers?</h5>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-slate-300"><strong className="font-semibold text-white">Non-Slip Safety:</strong> High traction soles for tiled floors</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-slate-300"><strong className="font-semibold text-white">Circulation Support:</strong> Non-constricting fit for swollen feet</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                    <span className="text-slate-300"><strong className="font-semibold text-white">Therapeutic Relief:</strong> Extra cushioning and seamless interiors</span>
                   </li>
                 </ul>
               </div>

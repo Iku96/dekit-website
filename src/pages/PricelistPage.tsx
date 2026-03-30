@@ -40,7 +40,13 @@ export default function PricelistPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const categories: string[] = ['All', ...Array.from(new Set(products.map(p => p.category as string)))];
+  const categories: string[] = ['All', ...(Array.from(new Set(products.map(p => p.category as string))) as string[]).sort((a, b) => {
+    if (a.includes('Stationery')) return -1;
+    if (b.includes('Stationery')) return 1;
+    if (a.includes('Slippers')) return -1;
+    if (b.includes('Slippers')) return 1;
+    return 0;
+  })];
 
   // Suggestions based on what user is typing (live filtering)
   const suggestions = useMemo(() => {

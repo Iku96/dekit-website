@@ -63,7 +63,13 @@ export default function GalleryPage() {
         title: cat,
         description: `Explore our collection of ${cat}.`,
         images: grouped[cat]
-      }));
+      })).sort((a, b) => {
+        if (a.title.includes('Stationery')) return -1;
+        if (b.title.includes('Stationery')) return 1;
+        if (a.title.includes('Slippers')) return -1;
+        if (b.title.includes('Slippers')) return 1;
+        return 0;
+      });
     }
     return fallbackGalleryCategories;
   }, [galleryItems]);

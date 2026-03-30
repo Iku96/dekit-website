@@ -15,36 +15,12 @@ export default function PricelistCTA() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Slippers Pricelist */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="group relative bg-amber-50/50 rounded-3xl p-8 border border-amber-100 shadow-md hover:shadow-xl transition-all flex flex-col items-center text-center overflow-hidden"
-          >
-            {/* Background Accent */}
-            <div className="absolute -top-12 -right-12 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors duration-500"></div>
-            
-            <div className="w-16 h-16 bg-amber-500 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
-              <FileText className="w-8 h-8" />
-            </div>
-            <h4 className="text-2xl font-bold text-slate-900 mb-3">Dekit Slippers</h4>
-            <p className="text-slate-600 mb-8">
-              Detailed pricing for our therapeutic, non-slip, and comfort footwear range.
-            </p>
-            <Link to="/pricelist" className="mt-auto inline-flex items-center justify-center gap-2 bg-white text-slate-700 border border-amber-200 px-6 py-3 rounded-full font-medium hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300 w-full shadow-sm">
-              View Full Pricelist
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-
           {/* Stationery Pricelist */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.5 }}
             className="group relative bg-cyan-50/50 rounded-3xl p-8 border border-cyan-100 shadow-md hover:shadow-xl transition-all flex flex-col items-center text-center overflow-hidden"
           >
             {/* Background Accent */}
@@ -58,6 +34,30 @@ export default function PricelistCTA() {
               Wholesale rates for our comprehensive range of office and educational supplies.
             </p>
             <Link to="/pricelist" className="mt-auto inline-flex items-center justify-center gap-2 bg-white text-slate-700 border border-cyan-200 px-6 py-3 rounded-full font-medium hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all duration-300 w-full shadow-sm">
+              View Full Pricelist
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+
+          {/* Slippers Pricelist */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="group relative bg-amber-50/50 rounded-3xl p-8 border border-amber-100 shadow-md hover:shadow-xl transition-all flex flex-col items-center text-center overflow-hidden"
+          >
+            {/* Background Accent */}
+            <div className="absolute -top-12 -right-12 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors duration-500"></div>
+            
+            <div className="w-16 h-16 bg-amber-500 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
+              <FileText className="w-8 h-8" />
+            </div>
+            <h4 className="text-2xl font-bold text-slate-900 mb-3">Dekit Slippers</h4>
+            <p className="text-slate-600 mb-8">
+              Detailed pricing for our therapeutic, non-slip, and comfort footwear range.
+            </p>
+            <Link to="/pricelist" className="mt-auto inline-flex items-center justify-center gap-2 bg-white text-slate-700 border border-amber-200 px-6 py-3 rounded-full font-medium hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300 w-full shadow-sm">
               View Full Pricelist
               <ArrowRight className="w-4 h-4" />
             </Link>
