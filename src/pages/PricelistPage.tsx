@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Search, Filter, ShoppingCart, Check, Image as ImageIcon } from 'lucide-react';
+import { Search, Filter, ShoppingCart, Check, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { products as fallbackProducts } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { collection, onSnapshot } from 'firebase/firestore';
@@ -7,16 +7,13 @@ import { db } from '../firebase';
 
 export default function PricelistPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeSearch, setActiveSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [products, setProducts] = useState<any[]>(fallbackProducts.map((p, i) => ({ id: `fallback-${i}`, ...p, name: p.item })));
   const { addToCart } = useCart();
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [showResults, setShowResults] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
@@ -29,16 +26,9 @@ export default function PricelistPage() {
     return () => unsubscribe();
   }, []);
 
-  // Close suggestions when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, itemsPerPage]);
 
   const categories: string[] = ['All', ...(Array.from(new Set(products.map(p => p.category as string))) as string[]).sort((a, b) => {
     if (a.includes('Stationery')) return -1;
@@ -48,29 +38,20 @@ export default function PricelistPage() {
     return 0;
   })];
 
-  // Suggestions based on what user is typing (live filtering)
-  const suggestions = useMemo(() => {
-    if (searchTerm.length === 0) {
-      // Show popular/sample items when focused but nothing typed
-      return products.slice(0, 6);
-    }
-    return products.filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ).slice(0, 8);
-  }, [searchTerm, products]);
-
-  // Actual filtered results (only used when showResults is true)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
-      const matchesSearch = activeSearch === '' || product.name.toLowerCase().includes(activeSearch.toLowerCase());
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [activeSearch, selectedCategory, products]);
+  }, [searchTerm, selectedCategory, products]);
 
   const paginatedProducts = useMemo(() => {
-    return filteredProducts.slice(0, itemsPerPage);
-  }, [filteredProducts, itemsPerPage]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredProducts, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS' }).format(amount);
@@ -103,26 +84,7 @@ export default function PricelistPage() {
     }, 2000);
   };
 
-  const handleSelectSuggestion = (productName: string) => {
-    setSearchTerm(productName);
-    setActiveSearch(productName);
-    setShowSuggestions(false);
-    setShowResults(true);
-  };
 
-  const handleSearchSubmit = () => {
-    if (searchTerm.trim().length > 0) {
-      setActiveSearch(searchTerm);
-      setShowSuggestions(false);
-      setShowResults(true);
-    }
-  };
-
-  const handleCategoryClick = (cat: string) => {
-    setSelectedCategory(cat);
-    setShowResults(true);
-    setShowSuggestions(false);
-  };
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12">
@@ -137,107 +99,50 @@ export default function PricelistPage() {
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col gap-6 mb-8">
-          {/* Category Tabs */}
-          <div className="flex bg-slate-200 p-1.5 rounded-xl self-start w-full sm:w-auto overflow-x-auto shadow-inner">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryClick(cat)}
-                className={`flex-1 sm:flex-none px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base font-bold transition-all whitespace-nowrap ${
-                  selectedCategory === cat && showResults
-                    ? 'bg-white text-blue-700 shadow border border-slate-100' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-300/50'
-                }`}
-              >
-                {cat === 'All' ? 'All Products' : cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Search with Suggestions Dropdown */}
-          <div className="relative w-full max-w-md" ref={searchRef}>
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-grow">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-slate-400" />
             </div>
             <input
               type="text"
-              placeholder="Search for an item..."
+              placeholder="Search items..."
               value={searchTerm}
-              onFocus={() => setShowSuggestions(true)}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setShowSuggestions(true);
-                // If user clears the search, hide results
-                if (e.target.value === '') {
-                  setActiveSearch('');
-                  setShowResults(false);
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearchSubmit();
-                }
-              }}
-              className="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl leading-5 bg-white shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
             />
-
-            {/* Suggestions Dropdown */}
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden z-50">
-                <div className="px-4 py-2 border-b border-slate-100">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    {searchTerm.length > 0 ? 'Matching Items' : 'Popular Items'}
-                  </span>
-                </div>
-                {suggestions.map((product, index) => (
-                  <button
-                    key={product.id || index}
-                    onClick={() => handleSelectSuggestion(product.name)}
-                    className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors flex items-center gap-3 border-b border-slate-50 last:border-b-0"
-                  >
-                    {product.imageUrl ? (
-                      <img src={product.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover border border-slate-200" />
-                    ) : (
-                      <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300">
-                        <ImageIcon className="w-4 h-4" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-slate-900 truncate">{product.name}</div>
-                      <div className="text-xs text-slate-400">{product.category}</div>
-                    </div>
-                    <span className="text-sm font-semibold text-blue-600 whitespace-nowrap">
-                      {formatCurrency(product.price)}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
+          </div>
+          
+          <div className="relative sm:w-64 shrink-0">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Filter className="h-5 w-5 text-slate-400" />
+            </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl leading-5 bg-slate-50 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors appearance-none"
+            >
+              <option value="">Select a category...</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
         </div>
 
         {/* Content Area */}
-        {!showResults ? (
-          <div className="bg-slate-50/50 rounded-3xl p-12 border-2 border-dashed border-slate-300 text-center max-w-lg mx-auto mt-12">
+        {selectedCategory === '' ? (
+          <div className="bg-slate-50/50 rounded-3xl p-12 border-2 border-dashed border-slate-300 text-center max-w-lg mx-auto mt-12 mb-20">
             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-500">
-               <Search className="w-10 h-10" />
+               <Filter className="w-10 h-10" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to explore?</h3>
             <p className="text-slate-500 mb-8">
-              Type in the search bar or select a category above to view our latest pricelist and inventory.
+              Select a category above to view our latest pricelist and inventory.
             </p>
-            <div className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 uppercase tracking-widest">
-              <span>Start searching</span>
-              <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
-              </div>
-            </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
 
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
@@ -437,21 +342,45 @@ export default function PricelistPage() {
           </div>
           
           <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-sm text-slate-500">
-              Showing <span className="font-medium text-slate-900">{paginatedProducts.length}</span> of <span className="font-medium text-slate-900">{filteredProducts.length}</span> products
-            </span>
-            <div className="flex items-center gap-2 text-sm text-slate-600">
-              <span>Show:</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                className="pl-3 pr-8 py-1.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none"
-              >
-                {[10, 25, 50, 100].map(val => (
-                  <option key={val} value={val}>{val} items</option>
-                ))}
-              </select>
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <span className="text-sm text-slate-500">
+                Showing <span className="font-medium text-slate-900">{filteredProducts.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}</span> to <span className="font-medium text-slate-900">{Math.min(currentPage * itemsPerPage, filteredProducts.length)}</span> of <span className="font-medium text-slate-900">{filteredProducts.length}</span> products
+              </span>
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <span>Show:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  className="pl-3 pr-8 py-1.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none"
+                >
+                  {[10, 25, 50, 100].map(val => (
+                    <option key={val} value={val}>{val} items</option>
+                  ))}
+                </select>
+              </div>
             </div>
+            
+            {totalPages > 1 && (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                  disabled={currentPage === 1}
+                  className="inline-flex items-center justify-center p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <div className="text-sm font-medium text-slate-700">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                  disabled={currentPage === totalPages}
+                  className="inline-flex items-center justify-center p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
         )}
