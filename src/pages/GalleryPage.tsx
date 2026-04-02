@@ -2,37 +2,33 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getSmartCategory, OFFICIAL_CATEGORIES } from '../utils/categoryMapper';
 
 export const fallbackGalleryCategories = [
   {
-    title: 'Dekit Stationery',
-    description: 'High-quality office stationery, from paper and notebooks to robust office equipment.',
-    images: [
-      { src: '/dekit_stationery_1.webp', alt: 'Premium Office Stationery' },
-      { src: '/dekit_stationery_2.webp', alt: 'Organizing Solutions' },
-      { src: '/dekit_stationery_3.webp', alt: 'Notebooks & Paper' },
-      { src: '/dekit_stationery_4.webp', alt: 'Pens & Writing Tools' },
-      { src: '/dekit_stationery_5.webp', alt: 'Wholesale Office Supplies' },
-      { src: '/dekit_stationery_6.webp', alt: 'Filing & Folders' },
-      { src: '/dekit_stationery_7.webp', alt: 'Desk Accessories' },
-      { src: '/dekit_stationery_8.webp', alt: 'Bulk Stationery Packs' },
-      { src: '/dekit_stationery_9.webp', alt: 'Calculators & Tools' },
-      { src: '/dekit_stationery_10.webp', alt: 'Complete Office Kits' }
-    ]
+    title: 'ORGANIZERS',
+    description: 'Smart solutions for a tidy and efficient workspace.',
+    images: [{ src: '/dekit_stationery_2.webp', alt: 'Organizing Solutions' }, { src: '/dekit_stationery_7.webp', alt: 'Desk Accessories' }]
   },
   {
-    title: 'Dekit Slippers',
-    description: 'Therapeutic, non-slip, and indoor slippers designed for everyday wellness.',
-    images: [
-      { src: '/dekit_slipper_2.webp', alt: 'Indoor Slippers' },
-      { src: '/dekit_slipper_3.webp', alt: 'Non-slip Soles' },
-      { src: '/dekit_slipper_4.webp', alt: 'Therapeutic Footwear' },
-      { src: '/dekit_slipper_5.webp', alt: 'Cozy Indoor Slippers' },
-      { src: '/dekit_slipper_6.webp', alt: 'Durable Footwear' },
-      { src: '/dekit_slipper_7.webp', alt: 'Everyday Indoor Slippers' },
-      { src: '/dekit_slipper_8.webp', alt: 'Warm Fit' },
-      { src: '/slipper_1.webp', alt: 'Dekit Special' }
-    ]
+    title: 'STORAGE & FILLING',
+    description: 'Secure and accessible filing systems for every document.',
+    images: [{ src: '/dekit_stationery_6.webp', alt: 'Filing & Folders' }, { src: '/dekit_stationery_8.webp', alt: 'Bulk Stationery Packs' }]
+  },
+  {
+    title: 'PAPERS STATIONERY',
+    description: 'Premium paper solutions for printing, writing, and commercial use.',
+    images: [{ src: '/dekit_stationery_3.webp', alt: 'Notebooks & Paper' }, { src: '/dekit_stationery_1.webp', alt: 'Premium Office Stationery' }]
+  },
+  {
+    title: 'WRITING STATIONERY',
+    description: 'Precision tools for handwriting and professional marking.',
+    images: [{ src: '/dekit_stationery_4.webp', alt: 'Pens & Writing Tools' }]
+  },
+  {
+    title: 'OTHER STATIONERIES',
+    description: 'Essential office tools and specialized accessories.',
+    images: [{ src: '/dekit_stationery_5.webp', alt: 'Wholesale Office Supplies' }, { src: '/dekit_stationery_9.webp', alt: 'Calculators & Tools' }, { src: '/dekit_stationery_10.webp', alt: 'Complete Office Kits' }]
   }
 ];
 
@@ -51,28 +47,34 @@ export default function GalleryPage() {
   }, []);
 
   const displayCategories = useMemo(() => {
-    if (galleryItems.length > 0) {
-      const grouped = galleryItems.reduce((acc: any, item: any) => {
-        const cat = item.category || 'Other';
-        if (!acc[cat]) acc[cat] = [];
-        acc[cat].push(item);
-        return acc;
-      }, {});
+    const items = galleryItems.length > 0 ? galleryItems : [];
 
-      return Object.keys(grouped).map(cat => ({
-        title: cat,
-        description: `Explore our collection of ${cat}.`,
-        images: grouped[cat]
-      })).sort((a, b) => {
-        if (a.title.includes('Stationery')) return -1;
-        if (b.title.includes('Stationery')) return 1;
-        if (a.title.includes('Slippers')) return -1;
-        if (b.title.includes('Slippers')) return 1;
-        return 0;
-      });
-    }
-    return fallbackGalleryCategories;
+    // Map each item to its smart category and filter hidden ones
+    const mappedItems = items.map(item => {
+      const smartCat = getSmartCategory(item.alt || item.name || '', item.category || '');
+      return { ...item, smartCategory: smartCat };
+    }).filter(item => item.smartCategory !== null);
+
+    // Group items by their smart category
+    const grouped = mappedItems.reduce((acc: any, item: any) => {
+      const cat = item.smartCategory;
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(item);
+      return acc;
+    }, {});
+
+    // Always ensure we have at least the official categories structure
+    const categoriesToShow = Object.keys(grouped).length > 0 
+      ? Object.keys(grouped).map(cat => ({
+          title: cat,
+          description: `Explore our collection of ${cat}.`,
+          images: grouped[cat]
+        })).sort((a, b) => OFFICIAL_CATEGORIES.indexOf(a.title) - OFFICIAL_CATEGORIES.indexOf(b.title))
+      : fallbackGalleryCategories;
+
+    return categoriesToShow;
   }, [galleryItems]);
+
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +83,7 @@ export default function GalleryPage() {
         <div className="mb-16 text-center max-w-3xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Product Gallery</h1>
           <p className="text-lg text-slate-600">
-            Explore our wide range of products. From essential office stationery to specialized indoor slippers, we provide high-quality solutions for your needs.
+            Explore our wide range of products. From essential office stationery to comprehensive business solutions, we provide high-quality tools for your needs.
           </p>
         </div>
 

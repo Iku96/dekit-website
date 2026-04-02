@@ -8,7 +8,7 @@ import { db } from '../firebase';
 const fallbackCenterSlideshowImages = [
   "/dekit_stationery_3.webp",
   "/dekit_stationery_4.webp",
-  "/dekit_slipper_3.webp",
+  "/dekit_stationery_5.webp",
   "/dekit_stationery_6.webp"
 ];
 
@@ -16,7 +16,7 @@ const fallbackGalleryImages = [
   "/dekit_stationery_7.webp", // Top Left
   "/dekit_stationery_8.webp", // Top Right
   "/dekit_stationery_9.webp", // Bottom Left
-  "/dekit_slipper_7.webp", // Bottom Right
+  "/dekit_stationery_10.webp", // Bottom Right
 ];
 
 export default function About() {

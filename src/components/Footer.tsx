@@ -18,9 +18,6 @@ export default function Footer() {
               Bridging the gap between producers and consumers with dependable service solutions.
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://instagram.com/dekitslippers" target="_blank" rel="noopener noreferrer" title="@dekitslippers" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
-                <Instagram className="w-4 h-4" />
-              </a>
               <a href="https://instagram.com/dekitstationers" target="_blank" rel="noopener noreferrer" title="@dekitstationers" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
                 <Instagram className="w-4 h-4" />
               </a>
@@ -45,14 +42,8 @@ export default function Footer() {
 
             {/* Divisions */}
             <div>
-              <h4 className="text-white font-bold mb-6 text-lg">Our Divisions</h4>
+              <h4 className="text-white font-bold mb-6 text-lg">Our Operations</h4>
               <ul className="space-y-6">
-                <li>
-                  <Link to="/#services" className="group flex flex-col">
-                    <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Slippers</span>
-                    <span className="text-xs text-slate-500 mt-1">Specialized Indoor Slippers</span>
-                  </Link>
-                </li>
                 <li>
                   <Link to="/#services" className="group flex flex-col">
                     <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Stationery</span>

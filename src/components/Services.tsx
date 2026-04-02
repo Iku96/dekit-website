@@ -1,5 +1,29 @@
 import { motion } from 'motion/react';
-import { Footprints, PenTool, CheckCircle2 } from 'lucide-react';
+import { PenTool, CheckCircle2, Building2, BookOpen, ScrollText } from 'lucide-react';
+
+const services = [
+  {
+    title: "Corporate Wholesale",
+    description: "Tailored bulk supply solutions for modern office environments, ensuring your team has the tools they need to excel.",
+    icon: Building2,
+    color: "cyan",
+    features: ["Bulk Procurement", "Contract Supply", "Custom Stationery Kits"]
+  },
+  {
+    title: "Specialty Paper & Rollers",
+    description: "Experts in high-precision thermal paper, EFD rollers, and premium paper solutions for commercial operations.",
+    icon: ScrollText,
+    color: "blue",
+    features: ["Thermal Rollers", "EFD Machine Paper", "High-GSM Bond Paper"]
+  },
+  {
+    title: "Educational Essentials",
+    description: "Supporting academic excellence with a comprehensive range of notebooks, writing tools, and classroom supplies.",
+    icon: BookOpen,
+    color: "indigo",
+    features: ["School Notebooks", "Writing Instruments", "Lab & Art Supplies"]
+  }
+];
 
 export default function Services() {
   return (
@@ -13,99 +37,49 @@ export default function Services() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3">What We Do</h2>
-          <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Our Core Divisions</h3>
-          <p className="text-lg text-slate-400 leading-relaxed">
-            We specialize in two core divisions: Wholesale Office Stationery Supply and Specialized Indoor Slippers.
+          <h2 className="text-sm font-bold tracking-widest text-blue-400 uppercase mb-3 text-center">What We Do</h2>
+          <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6 text-center">Wholesale Expertise</h3>
+          <p className="text-lg text-slate-400 leading-relaxed text-center">
+            We specialize in high-volume stationery supply, serving as a pillar for corporate efficiency and academic growth across the region.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Dekit Stationery */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="group relative bg-[#111827]/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/5 hover:border-cyan-500/30 transition-all duration-500 overflow-hidden"
-          >
-            {/* Hover Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center mb-8 border border-cyan-500/20 group-hover:scale-110 transition-transform duration-500">
-                <PenTool className="w-8 h-8" />
-              </div>
-              <h4 className="text-2xl font-bold text-white mb-4">Dekit Stationery</h4>
-              <p className="text-slate-400 leading-relaxed mb-8">
-                In our stationery division, we serve as a dependable partner for corporate and educational environments. We focus on the wholesale supply of office stationery, providing businesses with a comprehensive range of high-quality tools.
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {services.map((service, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group relative bg-[#111827]/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/5 hover:border-blue-500/30 transition-all duration-500"
+            >
+              <div className="relative z-10">
+                <div className="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 group-hover:scale-110 transition-transform duration-500">
+                  <service.icon className="w-7 h-7" />
+                </div>
+                <h4 className="text-xl font-bold text-white mb-4">{service.title}</h4>
+                <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                  {service.description}
+                </p>
 
-              <div className="bg-black/30 rounded-2xl p-6 border border-white/5">
-                <h5 className="font-bold text-white mb-4">Our Stationery Solutions</h5>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Wholesale Supply:</strong> Bulk orders for corporate needs</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Comprehensive Range:</strong> From writing instruments to paper</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Competitive Rates:</strong> High-quality tools at affordable prices</span>
-                  </li>
+                <ul className="space-y-3">
+                  {service.features.map((feature, fIndex) => (
+                    <li key={fIndex} className="flex items-center gap-2 text-xs text-slate-300">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-500/60" />
+                      {feature}
+                    </li>
+                  ))}
                 </ul>
               </div>
-            </div>
-          </motion.div>
-
-          {/* Dekit Slippers */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="group relative bg-[#111827]/80 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/5 hover:border-blue-500/30 transition-all duration-500 overflow-hidden"
-          >
-            {/* Hover Glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mb-8 border border-blue-500/20 group-hover:scale-110 transition-transform duration-500">
-                <Footprints className="w-8 h-8" />
-              </div>
-              <h4 className="text-2xl font-bold text-white mb-4">Dekit Slippers</h4>
-              <p className="text-slate-400 leading-relaxed mb-8">
-                Our footwear line, Dekit Indoor Slippers, is thoughtfully designed to provide therapeutic relief and safety. We prioritize the needs of diabetic patients and pregnant women by offering slippers with extra cushioning, non-slip soles, and seamless interiors.
-              </p>
-              
-              <div className="bg-black/30 rounded-2xl p-6 border border-white/5">
-                <h5 className="font-bold text-white mb-4">Why choose Our Slippers?</h5>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Non-Slip Safety:</strong> High traction soles for tiled floors</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Circulation Support:</strong> Non-constricting fit for swollen feet</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-300"><strong className="font-semibold text-white">Therapeutic Relief:</strong> Extra cushioning and seamless interiors</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ))}
         </div>
 
-        <div className="mt-20 text-center relative">
-          <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-          <p className="relative inline-block bg-[#0a0f1c] px-8 text-xl font-medium text-slate-300 italic max-w-4xl mx-auto">
-            "At Dekit Traders, we don't just move goods; we provide tailored solutions that enhance the well-being of our customers and the efficiency of their workplaces."
+        <div className="mt-24 text-center relative">
+          <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+          <p className="relative inline-block bg-[#0a0f1c] px-8 text-lg font-medium text-slate-400 italic max-w-2xl mx-auto">
+            "Tailored solutions that enhance workplace efficiency and academic well-being."
           </p>
         </div>
       </div>

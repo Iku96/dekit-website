@@ -123,10 +123,9 @@ export default function Contact() {
                   className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-slate-50 focus:bg-white text-slate-700"
                 >
                   <option value="">Select a subject...</option>
-                  <option value="slippers">Dekit Slippers Inquiry</option>
                   <option value="stationery">Dekit Stationery Inquiry</option>
                   <option value="partnership">Partnership Opportunities</option>
-                  <option value="other">Other</option>
+                  <option value="other">Other Inquiry</option>
                 </select>
               </div>
 

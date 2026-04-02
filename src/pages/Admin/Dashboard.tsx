@@ -7,6 +7,9 @@ import { db, storage } from '../../firebase';
 import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database } from 'lucide-react';
 import { fallbackGalleryCategories } from '../GalleryPage';
 import { products as fallbackProducts } from '../../data/products';
+import { getSmartCategory, OFFICIAL_CATEGORIES as productCategories } from '../../utils/categoryMapper';
+
+// Removed redundant productCategories as it's now imported as productCategories from categoryMapper
 
 export default function AdminDashboard() {
   const { user, isAdmin, loading, logout } = useAuth();
@@ -22,7 +25,7 @@ export default function AdminDashboard() {
   const [editingItem, setEditingItem] = useState<any>(null);
 
   // Form states
-  const [productForm, setProductForm] = useState({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
+  const [productForm, setProductForm] = useState({ name: '', category: productCategories[0], unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
   const [galleryForm, setGalleryForm] = useState({ src: '', alt: '', category: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
@@ -218,7 +221,7 @@ export default function AdminDashboard() {
       });
     } else {
       setEditingItem(null);
-      setProductForm({ name: '', category: '', unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
+      setProductForm({ name: '', category: productCategories[0], unit: '', price: 0, moq: 1, bulkPrice: 0, imageUrl: '' });
     }
     setIsProductModalOpen(true);
   };
@@ -372,6 +375,35 @@ export default function AdminDashboard() {
                 <button onClick={() => openProductModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
                   <Plus className="w-4 h-4" /> Add Product
                 </button>
+              </div>
+            </div>
+
+            {/* Database Health Section */}
+            <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`p-2 rounded-lg ${products.filter(p => !productCategories.includes(p.category?.toUpperCase() || '')).length === 0 ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+                    <Database className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-slate-800">Database Health</h3>
+                </div>
+                <p className="text-sm text-slate-500">
+                  {products.filter(p => !productCategories.includes(p.category?.toUpperCase() || '')).length > 0 
+                    ? `${products.filter(p => !productCategories.includes(p.category?.toUpperCase() || '')).length} products need re-categorization to match the PDF headers.`
+                    : "All products are perfectly categorized according to the official PDF!"}
+                </p>
+              </div>
+              
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                    <Package className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-slate-800">Total Stationery</h3>
+                </div>
+                <p className="text-sm text-slate-500">
+                  You have {products.length} active stationery products in your catalog.
+                </p>
               </div>
             </div>
             
@@ -537,7 +569,16 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                <input type="text" required value={productForm.category} onChange={e => setProductForm({...productForm, category: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
+                <select 
+                  required 
+                  value={productForm.category} 
+                  onChange={e => setProductForm({...productForm, category: e.target.value})} 
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none appearance-none bg-white"
+                >
+                  {productCategories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -657,7 +698,6 @@ export default function AdminDashboard() {
                   <option value="Paper & Notebooks" />
                   <option value="Writing & Pin Stationery" />
                   <option value="Machine & Whiteboard Accessories" />
-                  <option value="Dekit Slippers" />
                 </datalist>
                 <p className="text-xs text-slate-500 mt-1">Use "Hero" or "About" to update those specific sections.</p>
               </div>
