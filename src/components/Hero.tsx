@@ -92,47 +92,10 @@ export default function Hero() {
               </span>
             </h1>
             
-            <p className="text-lg text-slate-400 mb-10 leading-relaxed max-w-xl font-light">
-              Dekit Traders streamlines the supply chain, prioritizing quality and reliability to ensure high-standard products reach you with efficiency and integrity.
-            </p>
             
-            <div className="flex flex-wrap items-center gap-5">
-              <a
-                href="#services"
-                className="group relative inline-flex items-center justify-center gap-2 bg-white text-slate-950 px-8 py-4 rounded-full font-semibold hover:bg-blue-50 transition-all overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-blue-400/30 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-                Explore Services
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a
-                href="#contact"
-                className="inline-flex items-center justify-center gap-2 bg-white/5 text-white border border-white/10 px-8 py-4 rounded-full font-semibold hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-md"
-              >
-                Contact Us
-              </a>
-            </div>
-
-            <div className="mt-12 pt-8 border-t border-white/10 flex flex-wrap items-center gap-8">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/5 p-3 rounded-xl border border-white/10 text-blue-400 backdrop-blur-sm">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-white font-semibold">Quality Assured</div>
-                  <div className="text-sm text-slate-400">100% Verified</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="bg-white/5 p-3 rounded-xl border border-white/10 text-indigo-400 backdrop-blur-sm">
-                  <PackageOpen className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-white font-semibold">Reliable Supply</div>
-                  <div className="text-sm text-slate-400">On-time Delivery</div>
-                </div>
-              </div>
-            </div>
+            <p className="text-lg text-slate-400 mb-10 leading-relaxed max-w-xl font-light">
+              Dekit Traders is a solution-oriented enterprise dedicated to streamlining the supply chain. By prioritizing quality and reliability, we ensure that high-standard products reach the end-user with efficiency and integrity.
+            </p>
           </motion.div>
 
           <motion.div

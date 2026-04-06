@@ -8,20 +8,6 @@ const services = [
     icon: Building2,
     color: "cyan",
     features: ["Bulk Procurement", "Contract Supply", "Custom Stationery Kits"]
-  },
-  {
-    title: "Specialty Paper & Rollers",
-    description: "Experts in high-precision thermal paper, EFD rollers, and premium paper solutions for commercial operations.",
-    icon: ScrollText,
-    color: "blue",
-    features: ["Thermal Rollers", "EFD Machine Paper", "High-GSM Bond Paper"]
-  },
-  {
-    title: "Educational Essentials",
-    description: "Supporting academic excellence with a comprehensive range of notebooks, writing tools, and classroom supplies.",
-    icon: BookOpen,
-    color: "indigo",
-    features: ["School Notebooks", "Writing Instruments", "Lab & Art Supplies"]
   }
 ];
 
@@ -44,7 +30,7 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="max-w-xl mx-auto">
           {services.map((service, index) => (
             <motion.div
               key={index}

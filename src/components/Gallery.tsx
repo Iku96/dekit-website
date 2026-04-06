@@ -28,8 +28,7 @@ export default function Gallery() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-sm font-bold tracking-widest text-blue-500 uppercase mb-3">Our Work</h2>
-          <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Gallery</h3>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6 uppercase tracking-tight">Gallery</h2>
           <p className="text-lg text-slate-400 leading-relaxed">
             A glimpse into our high-quality products and essential office stationery.
           </p>

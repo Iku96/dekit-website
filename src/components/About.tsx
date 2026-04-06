@@ -69,18 +69,12 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-bold tracking-widest uppercase mb-6">
-              About Us
-            </div>
-            <h3 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-[1.1]">
+            <h3 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
               Bridging the gap between <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
                 producers & consumers
               </span>
             </h3>
-            <p className="text-lg text-slate-600 leading-relaxed mb-8">
-              Dekit Traders is a solution-oriented enterprise dedicated to streamlining the supply chain. By prioritizing quality and reliability, we ensure that high-standard products reach the end-user with efficiency and integrity.
-            </p>
 
             <div className="bg-blue-50/50 border border-blue-200/50 p-6 rounded-2xl mb-8 shadow-sm">
               <p className="text-sm text-slate-500 leading-relaxed mb-4">
@@ -208,20 +202,6 @@ export default function About() {
               <div className="absolute top-32 -left-[1px] w-[2px] h-10 bg-slate-700 rounded-l-sm"></div>
               <div className="absolute top-12 -right-[1px] w-[2px] h-14 bg-slate-700 rounded-r-sm"></div>
 
-              {/* Floating Quality Badge */}
-              <motion.div 
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-6 -left-6 sm:-left-10 bg-white p-5 rounded-2xl shadow-xl border border-slate-200 flex items-center gap-4 z-40"
-              >
-                <div className="bg-blue-50 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold text-slate-900">Quality Assured</div>
-                  <div className="text-xs text-slate-500">100% Verified Supply</div>
-                </div>
-              </motion.div>
             </div>
             
             {/* Decorative Elements */}
