@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ShareButton from './components/ShareButton';
 import Home from './pages/Home';
 import PricelistPage from './pages/PricelistPage';
 import GalleryPage from './pages/GalleryPage';
@@ -28,6 +29,7 @@ export default function App() {
               </Routes>
             </main>
             <Footer />
+            <ShareButton />
           </div>
         </BrowserRouter>
       </CartProvider>
