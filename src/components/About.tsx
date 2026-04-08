@@ -1,212 +1,176 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Target, Compass, Briefcase, CheckCircle2 } from 'lucide-react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { db } from '../firebase';
+import { motion } from 'motion/react';
+import { Target, Compass, Shield, Heart, Clock, Eye, Building2, CheckCircle2 } from 'lucide-react';
 
-// You can easily change these images in the future by updating the URLs below
-const fallbackCenterSlideshowImages = [
-  "/dekit_stationery_3.webp",
-  "/dekit_stationery_4.webp",
-  "/dekit_stationery_5.webp",
-  "/dekit_stationery_6.webp"
-];
-
-const fallbackGalleryImages = [
-  "/dekit_stationery_7.webp", // Top Left
-  "/dekit_stationery_8.webp", // Top Right
-  "/dekit_stationery_9.webp", // Bottom Left
-  "/dekit_stationery_10.webp", // Bottom Right
+const values = [
+  { title: 'Honesty', icon: Shield, color: 'text-blue-600', bg: 'bg-blue-50' },
+  { title: 'Customer-Centric', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-50' },
+  { title: 'Reliability', icon: Clock, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+  { title: 'Transparency', icon: Eye, color: 'text-indigo-500', bg: 'bg-indigo-50' },
 ];
 
 export default function About() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [centerSlideshowImages, setCenterSlideshowImages] = useState(fallbackCenterSlideshowImages);
-  const [galleryImages, setGalleryImages] = useState(fallbackGalleryImages);
-
-  useEffect(() => {
-    const q = query(collection(db, 'gallery'), where('category', '==', 'About'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const images = snapshot.docs.map(doc => doc.data().src);
-        if (images.length >= 4) {
-          setGalleryImages(images.slice(0, 4));
-          if (images.length > 4) {
-            setCenterSlideshowImages(images.slice(4));
-          } else {
-            setCenterSlideshowImages(images);
-          }
-        } else {
-          setCenterSlideshowImages(images);
-          setGalleryImages(fallbackGalleryImages);
-        }
-      } else {
-        setCenterSlideshowImages(fallbackCenterSlideshowImages);
-        setGalleryImages(fallbackGalleryImages);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % centerSlideshowImages.length);
-    }, 4000); // Change image every 4 seconds
-    return () => clearInterval(timer);
-  }, [centerSlideshowImages.length]);
   return (
-    <section id="about" className="py-24 bg-white relative overflow-hidden">
-      {/* Subtle Dot Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-50"></div>
-      
+    <section id="about" className="py-24 bg-slate-50 relative overflow-hidden">
+      {/* Subtle Background Elements */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-100/40 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-100/40 rounded-full blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/3"></div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          
-          {/* Text Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <h3 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+          <div className="max-w-2xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-blue-100 shadow-sm mb-6"
+            >
+              <span className="text-blue-600 text-xs font-bold uppercase tracking-wider">What We Do</span>
+            </motion.div>
+            
+            <motion.h3 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-[1.1]"
+            >
               Bridging the gap between <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
                 producers & consumers
               </span>
-            </h3>
+            </motion.h3>
+          </div>
 
-            <div className="bg-blue-50/50 border border-blue-200/50 p-6 rounded-2xl mb-8 shadow-sm">
-              <p className="text-sm text-slate-500 leading-relaxed mb-4">
-                Dekit Traders has been duly registered pursuant to and in accordance with the provisions of the Business Names (Registration) Act and the Rules made thereunder, and has been entered in the Number 624105 in the Index of Registration.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
-                <div>
-                  <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Business License No</span>
-                  <span className="text-sm font-medium text-slate-900 font-mono">BL01396912025-2600025809</span>
-                </div>
-                <div>
-                  <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">TIN No</span>
-                  <span className="text-sm font-medium text-slate-900 font-mono">132-007-594</span>
-                </div>
-              </div>
+          {/* Registration Mini-Badge */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="bg-white/80 backdrop-blur-sm border border-slate-200/60 p-4 rounded-xl shadow-sm text-left flex flex-col gap-2 shrink-0 max-w-xs"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Reg No</span>
+              <span className="text-xs font-bold text-slate-700 font-mono leading-none">624105</span>
             </div>
-            
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 text-white shadow-lg shadow-blue-600/20">
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">License</span>
+              <span className="text-xs font-bold text-slate-900 font-mono leading-none">BL01396912025</span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">TIN</span>
+              <span className="text-xs font-bold text-slate-900 font-mono leading-none">132-007-594</span>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* 3-Column Horizontal Layout */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          
+          {/* Column 1: Mission & Vision */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-6"
+          >
+            {/* Mission Card */}
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group h-full">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-5">
                   <Target className="w-6 h-6" />
                 </div>
-                <div>
-                  <h4 className="text-xl font-bold text-slate-900 mb-2">Our Mission</h4>
-                  <p className="text-slate-600 leading-relaxed">To provide high-quality products and exceptional service that empower businesses to thrive.</p>
-                </div>
+                <h4 className="text-xl font-bold text-slate-900 mb-3">Our Mission</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  To provide high-quality products and exceptional service that empower businesses to thrive and achieve operational excellence.
+                </p>
               </div>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center shrink-0 text-white shadow-lg shadow-indigo-600/20">
+            </div>
+
+            {/* Vision Card */}
+            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group h-full">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-5">
                   <Compass className="w-6 h-6" />
                 </div>
-                <div>
-                  <h4 className="text-xl font-bold text-slate-900 mb-2">Our Vision</h4>
-                  <p className="text-slate-600 leading-relaxed">Emphasizing long-term client partnerships, operational excellence, and adapting to changing market needs.</p>
-                </div>
+                <h4 className="text-xl font-bold text-slate-900 mb-3">Our Vision</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Emphasizing long-term partnerships, operational excellence, and adapting to changing market needs with innovative solutions.
+                </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Image Composition */}
+          {/* Column 2: Core Values */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="relative lg:ml-auto w-full max-w-lg"
+            transition={{ delay: 0.1 }}
+            className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm flex flex-col h-full"
           >
-            {/* Realistic iPad Frame */}
-            <div className="relative w-full aspect-[3/4] bg-slate-900 rounded-[2.5rem] p-3 sm:p-4 shadow-[0_20px_50px_rgba(0,0,0,0.2),inset_0_0_0_1px_rgba(255,255,255,0.05)] border border-slate-800">
-              
-              {/* iPad Screen */}
-              <div className="relative w-full h-full bg-black rounded-[1.75rem] overflow-hidden shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
-                
-                {/* Image Gallery / Collage */}
-                <div className="relative w-full h-full bg-white">
-                  {/* Center Hexagon (Slideshow) */}
-                  <div 
-                    className="absolute inset-0"
-                    style={{ clipPath: 'polygon(50% 20%, 80% 35%, 80% 65%, 50% 80%, 20% 65%, 20% 35%)' }}
-                  >
-                    <AnimatePresence initial={false}>
-                      <motion.img 
-                        key={currentSlide}
-                        src={centerSlideshowImages[currentSlide]} 
-                        alt="Gallery Center Slideshow" 
-                        className="absolute inset-0 w-full h-full object-cover" 
-                        referrerPolicy="no-referrer"
-                        initial={{ x: '100%' }}
-                        animate={{ x: 0 }}
-                        exit={{ x: '-100%' }}
-                        transition={{ duration: 0.8, ease: "easeInOut" }}
-                      />
-                    </AnimatePresence>
-                  </div>
-                  
-                  {/* Top Left */}
-                  <div 
-                    className="absolute inset-0"
-                    style={{ clipPath: 'polygon(0% 0%, 49% 0%, 49% 18.5%, 18% 34%, 0% 34%)' }}
-                  >
-                    <img src={galleryImages[0]} alt="Gallery Top Left" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  </div>
-
-                  {/* Top Right */}
-                  <div 
-                    className="absolute inset-0"
-                    style={{ clipPath: 'polygon(51% 0%, 100% 0%, 100% 34%, 82% 34%, 51% 18.5%)' }}
-                  >
-                    <img src={galleryImages[1]} alt="Gallery Top Right" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  </div>
-
-                  {/* Bottom Left */}
-                  <div 
-                    className="absolute inset-0"
-                    style={{ clipPath: 'polygon(0% 36%, 18% 36%, 18% 66%, 49% 81.5%, 49% 100%, 0% 100%)' }}
-                  >
-                    <img src={galleryImages[2]} alt="Gallery Bottom Left" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  </div>
-
-                  {/* Bottom Right */}
-                  <div 
-                    className="absolute inset-0"
-                    style={{ clipPath: 'polygon(100% 36%, 82% 36%, 82% 66%, 51% 81.5%, 51% 100%, 100% 100%)' }}
-                  >
-                    <img src={galleryImages[3]} alt="Gallery Bottom Right" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  </div>
-                </div>
-
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none"></div>
-                
-                {/* iPad UI: Home Indicator (Bottom) */}
-                <div className="absolute bottom-2 inset-x-0 flex justify-center z-30">
-                  <div className="w-1/3 h-1 sm:h-1.5 bg-white/60 rounded-full backdrop-blur-md"></div>
-                </div>
-              </div>
-              
-              {/* iPad UI: Camera (Top Bezel) */}
-              <div className="absolute left-1/2 top-1.5 sm:top-2 -translate-x-1/2 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-slate-950 rounded-full shadow-[inset_0_0_2px_rgba(255,255,255,0.1)]"></div>
-              </div>
-              
-              {/* iPad UI: Volume/Power Buttons (Edges) */}
-              <div className="absolute top-16 -left-[1px] w-[2px] h-10 bg-slate-700 rounded-l-sm"></div>
-              <div className="absolute top-32 -left-[1px] w-[2px] h-10 bg-slate-700 rounded-l-sm"></div>
-              <div className="absolute top-12 -right-[1px] w-[2px] h-14 bg-slate-700 rounded-r-sm"></div>
-
-            </div>
+            <h4 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <span className="w-2 h-6 bg-blue-500 rounded-full"></span>
+              Core Values
+            </h4>
+            <p className="text-slate-600 text-sm leading-relaxed mb-8">
+              The foundational principles that guide our decisions, shape our culture, and drive our commitment to excellence.
+            </p>
             
-            {/* Decorative Elements */}
-            <div className="absolute -top-6 -right-6 w-32 h-32 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-blob -z-10"></div>
-            <div className="absolute -bottom-6 -right-6 w-40 h-40 bg-cyan-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 animate-blob animation-delay-2000 -z-10"></div>
+            <div className="grid grid-cols-2 gap-4 mt-auto">
+              {values.map((value) => (
+                <div key={value.title} className={`${value.bg} p-4 rounded-2xl border border-white/50 relative overflow-hidden group`}>
+                  <div className={`absolute -right-2 -bottom-2 opacity-5 ${value.color} group-hover:scale-125 transition-transform duration-500`}>
+                    <value.icon className="w-16 h-16" />
+                  </div>
+                  <div className="relative z-10 flex flex-col gap-3">
+                    <value.icon className={`w-5 h-5 ${value.color}`} />
+                    <span className="font-bold text-slate-900 text-sm">{value.title}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Column 3: Services (Corporate Wholesale) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="bg-slate-900 text-white p-8 rounded-3xl relative overflow-hidden flex flex-col h-full shadow-lg shadow-slate-900/10"
+          >
+            {/* Subtle Inner Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-[80px]"></div>
+            
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6 self-start">
+                <span className="text-blue-400 text-[10px] font-bold uppercase tracking-wider">Service Highlight</span>
+              </div>
+              
+              <div className="w-12 h-12 rounded-2xl bg-white/10 text-white flex items-center justify-center mb-5 backdrop-blur-sm border border-white/5">
+                <Building2 className="w-6 h-6" />
+              </div>
+              
+              <h4 className="text-2xl font-bold mb-3">Corporate Wholesale</h4>
+              <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">
+                Tailored bulk supply solutions for modern office environments, ensuring your team has the tools they need to excel. We specialize in high-volume efficiency.
+              </p>
+              
+              <div className="space-y-3 mt-auto pt-6 border-t border-white/10">
+                {["Bulk Procurement", "Contract Supply", "Custom Stationery Kits"].map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span className="text-sm text-slate-200">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.div>
 
         </div>

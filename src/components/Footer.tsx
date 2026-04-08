@@ -33,8 +33,7 @@ export default function Footer() {
             <div>
               <h4 className="text-white font-bold mb-6 text-lg">Quick Links</h4>
               <ul className="space-y-4">
-                <li><Link to="/#about" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> About Us</Link></li>
-                <li><Link to="/#services" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Our Services</Link></li>
+                <li><Link to="/#about" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> What We Do</Link></li>
                 <li><Link to="/pricelist" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Pricelist</Link></li>
                 <li><Link to="/gallery" className="text-sm text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500/50"></span> Gallery</Link></li>
               </ul>
@@ -45,7 +44,7 @@ export default function Footer() {
               <h4 className="text-white font-bold mb-6 text-lg">Our Operations</h4>
               <ul className="space-y-6">
                 <li>
-                  <Link to="/#services" className="group flex flex-col">
+                  <Link to="/#about" className="group flex flex-col">
                     <span className="font-medium text-slate-300 group-hover:text-blue-400 transition-colors">Dekit Stationery</span>
                     <span className="text-xs text-slate-500 mt-1">Wholesale Office Supply</span>
                   </Link>
