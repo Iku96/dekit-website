@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, writeBatch, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
-import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database } from 'lucide-react';
+import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database, Users } from 'lucide-react';
 import { fallbackGalleryCategories } from '../GalleryPage';
 import { products as fallbackProducts } from '../../data/products';
 import { getSmartCategory, OFFICIAL_CATEGORIES as productCategories } from '../../utils/categoryMapper';
@@ -13,11 +13,13 @@ import { getSmartCategory, OFFICIAL_CATEGORIES as productCategories } from '../.
 
 export default function AdminDashboard() {
   const { user, isAdmin, loading, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'gallery'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'gallery' | 'team'>('orders');
   
   const [orders, setOrders] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
+  const [team, setTeam] = useState<any[]>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
 
   // Search and filter states
   const [productSearch, setProductSearch] = useState('');
@@ -79,10 +81,15 @@ export default function AdminDashboard() {
       }
     });
 
+    const unsubTeam = onSnapshot(collection(db, 'users'), (snapshot) => {
+      setTeam(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
     return () => {
       unsubOrders();
       unsubProducts();
       unsubGallery();
+      unsubTeam();
     };
   }, [isAdmin]);
 
@@ -179,6 +186,30 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSaveTeamMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAdminEmail) return;
+    try {
+      const emailLower = newAdminEmail.toLowerCase();
+      const docRef = doc(db, 'users', emailLower);
+      await setDoc(docRef, { email: emailLower, role: 'admin' });
+      setNewAdminEmail('');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to add admin.');
+    }
+  };
+
+  const handleDeleteTeamMember = async (emailId: string) => {
+    if (emailId === 'ikumwana@gmail.com' || emailId === user?.email?.toLowerCase()) {
+      alert("Cannot delete primary admin or your own account.");
+      return;
+    }
+    if (window.confirm('Are you sure you want to remove this admin?')) {
+      await deleteDoc(doc(db, 'users', emailId));
+    }
+  };
+
   const openProductModal = (product: any = null) => {
     if (product) {
       setEditingItem(product);
@@ -263,6 +294,13 @@ export default function AdminDashboard() {
           >
             <ImageIcon className="w-4 h-4 md:w-5 md:h-5" />
             Gallery
+          </button>
+          <button 
+            onClick={() => setActiveTab('team')}
+            className={`flex-shrink-0 flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-3 rounded-xl transition-colors ${activeTab === 'team' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`}
+          >
+            <Users className="w-4 h-4 md:w-5 md:h-5" />
+            Users & Roles
           </button>
         </nav>
 
@@ -533,6 +571,71 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Team Tab */}
+        {activeTab === 'team' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">Manage Users & Roles</h2>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
+              <h3 className="font-bold text-slate-800 mb-4">Add New Admin</h3>
+              <form onSubmit={handleSaveTeamMember} className="flex gap-4 items-end">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                  <input 
+                    type="email" 
+                    required 
+                    value={newAdminEmail} 
+                    onChange={e => setNewAdminEmail(e.target.value)} 
+                    placeholder="user@example.com"
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" 
+                  />
+                </div>
+                <button type="submit" className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors h-[42px]">
+                  <Plus className="w-4 h-4" /> Add User
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              <table className="w-full text-left text-sm text-slate-600">
+                <thead className="bg-slate-50 text-slate-900 font-medium border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4">Email</th>
+                    <th className="px-6 py-4 w-32">Role</th>
+                    <th className="px-6 py-4 w-24 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {team.map(member => (
+                    <tr key={member.id} className="hover:bg-slate-50">
+                      <td className="px-6 py-4 font-medium text-slate-900">{member.email}</td>
+                      <td className="px-6 py-4">
+                        <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-wider rounded-full">
+                          {member.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {(member.email !== 'ikumwana@gmail.com' && member.email !== user.email?.toLowerCase()) && (
+                          <button onClick={() => handleDeleteTeamMember(member.email)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {team.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-8 text-center text-slate-500 italic">No users found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}

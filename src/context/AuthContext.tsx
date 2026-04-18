@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, query, collection, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
 interface AuthContextType {
@@ -23,22 +23,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser);
       if (currentUser) {
         try {
-          // Check if user is admin
-          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-          if (userDoc.exists() && userDoc.data().role === 'admin') {
+          // Check if user is admin based on email
+          const q = query(collection(db, 'users'), where('email', '==', currentUser.email?.toLowerCase()));
+          const querySnapshot = await getDocs(q);
+          
+          if (!querySnapshot.empty && querySnapshot.docs[0].data().role === 'admin') {
             setIsAdmin(true);
           } else if (currentUser.email === 'ikumwana@gmail.com') {
             // Bootstrap default admin
-            await setDoc(doc(db, 'users', currentUser.uid), {
+            await setDoc(doc(db, 'users', currentUser.email), {
               email: currentUser.email,
               role: 'admin'
             });
             setIsAdmin(true);
           } else {
+            // Unauthorized - Immediately sign out to clear session
+            await signOut(auth);
+            setUser(null);
             setIsAdmin(false);
           }
         } catch (error) {
           console.error("Error checking admin status:", error);
+          await signOut(auth);
+          setUser(null);
           setIsAdmin(false);
         }
       } else {
