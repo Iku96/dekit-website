@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, writeBatch, setDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, writeBatch, setDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
 import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database, Users } from 'lucide-react';
@@ -35,50 +35,55 @@ export default function AdminDashboard() {
   const [galleryForm, setGalleryForm] = useState({ src: '', alt: '', category: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isAdmin) return;
+
+    const initSeeding = async () => {
+      try {
+        const seedRef = doc(db, 'system', 'seeding');
+        const seedDoc = await getDoc(seedRef);
+        const data = seedDoc.exists() ? seedDoc.data() : { productsSeeded: false, gallerySeeded: false };
+
+        if (!data.productsSeeded) {
+          const batch = writeBatch(db);
+          fallbackProducts.forEach(p => {
+            const docRef = doc(collection(db, 'products'));
+            batch.set(docRef, { name: p.item, category: p.category, unit: p.unit, price: p.price, moq: p.moq, bulkPrice: p.bulkPrice || 0 });
+          });
+          await batch.commit();
+          await setDoc(seedRef, { productsSeeded: true }, { merge: true });
+        }
+
+        if (!data.gallerySeeded) {
+          const batch = writeBatch(db);
+          fallbackGalleryCategories.forEach(category => {
+            category.images.forEach(img => {
+              const docRef = doc(collection(db, 'gallery'));
+              batch.set(docRef, { src: img.src, alt: img.alt, category: category.title });
+            });
+          });
+          await batch.commit();
+          await setDoc(seedRef, { gallerySeeded: true }, { merge: true });
+        }
+      } catch (err) {
+        console.error("Seeding error:", err);
+      }
+    };
+    initSeeding();
 
     const unsubOrders = onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')), (snapshot) => {
       setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
     const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
-      if (snapshot.empty) {
-        // Auto-seed fallbacks so they show up in the admin automatically
-        const batch = writeBatch(db);
-        fallbackProducts.forEach(p => {
-          const docRef = doc(collection(db, 'products'));
-          batch.set(docRef, {
-            name: p.item,
-            category: p.category,
-            unit: p.unit,
-            price: p.price,
-            moq: p.moq,
-            bulkPrice: p.bulkPrice || 0
-          });
-        });
-        batch.commit().catch(console.error);
-      } else {
-        setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      }
+      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
     const unsubGallery = onSnapshot(collection(db, 'gallery'), (snapshot) => {
-      if (snapshot.empty) {
-        // Auto-seed fallbacks so they show up in the admin automatically
-        const batch = writeBatch(db);
-        fallbackGalleryCategories.forEach(category => {
-          category.images.forEach(img => {
-            const docRef = doc(collection(db, 'gallery'));
-            batch.set(docRef, { src: img.src, alt: img.alt, category: category.title });
-          });
-        });
-        batch.commit().catch(console.error);
-      } else {
-        setGallery(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      }
+      setGallery(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     });
 
     const unsubTeam = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -108,6 +113,8 @@ export default function AdminDashboard() {
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
+    setIsSaving(true);
     try {
       const data = {
         name: productForm.name,
@@ -130,6 +137,8 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error saving product:", error);
       alert("Failed to save product. Check console for details.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -141,6 +150,8 @@ export default function AdminDashboard() {
 
   const handleSaveGallery = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
+    setIsSaving(true);
     try {
       if (editingItem) {
         await updateDoc(doc(db, 'gallery', editingItem.id), galleryForm);
@@ -153,6 +164,8 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error saving gallery image:", error);
       alert("Failed to save image. Check console for details.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -188,7 +201,8 @@ export default function AdminDashboard() {
 
   const handleSaveTeamMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAdminEmail) return;
+    if (!newAdminEmail || isSaving) return;
+    setIsSaving(true);
     try {
       const emailLower = newAdminEmail.toLowerCase();
       const docRef = doc(db, 'users', emailLower);
@@ -197,6 +211,8 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error(error);
       alert('Failed to add admin.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -596,8 +612,8 @@ export default function AdminDashboard() {
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" 
                   />
                 </div>
-                <button type="submit" className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors h-[42px]">
-                  <Plus className="w-4 h-4" /> Add User
+                <button type="submit" disabled={isSaving} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors h-[42px] disabled:opacity-50">
+                  <Plus className="w-4 h-4" /> {isSaving ? 'Adding...' : 'Add User'}
                 </button>
               </form>
             </div>
@@ -730,8 +746,10 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsProductModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Save Product</button>
+                <button type="button" onClick={() => setIsProductModalOpen(false)} disabled={isSaving} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
+                <button type="submit" disabled={isSaving} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50">
+                  {isSaving ? 'Saving...' : 'Save Product'}
+                </button>
               </div>
             </form>
           </div>
@@ -792,8 +810,10 @@ export default function AdminDashboard() {
                 <p className="text-xs text-slate-500 mt-1">Use "Hero" or "About" to update those specific sections.</p>
               </div>
               <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsGalleryModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Save Image</button>
+                <button type="button" onClick={() => setIsGalleryModalOpen(false)} disabled={isSaving} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
+                <button type="submit" disabled={isSaving} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50">
+                  {isSaving ? 'Saving...' : 'Save Image'}
+                </button>
               </div>
             </form>
           </div>
