@@ -19,6 +19,10 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
 
+  // Search and filter states
+  const [productSearch, setProductSearch] = useState('');
+  const [productCategory, setProductCategory] = useState('');
+
   // Modals state
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
@@ -39,11 +43,40 @@ export default function AdminDashboard() {
     });
 
     const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
-      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      if (snapshot.empty) {
+        // Auto-seed fallbacks so they show up in the admin automatically
+        const batch = writeBatch(db);
+        fallbackProducts.forEach(p => {
+          const docRef = doc(collection(db, 'products'));
+          batch.set(docRef, {
+            name: p.item,
+            category: p.category,
+            unit: p.unit,
+            price: p.price,
+            moq: p.moq,
+            bulkPrice: p.bulkPrice || 0
+          });
+        });
+        batch.commit().catch(console.error);
+      } else {
+        setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      }
     });
 
     const unsubGallery = onSnapshot(collection(db, 'gallery'), (snapshot) => {
-      setGallery(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      if (snapshot.empty) {
+        // Auto-seed fallbacks so they show up in the admin automatically
+        const batch = writeBatch(db);
+        fallbackGalleryCategories.forEach(category => {
+          category.images.forEach(img => {
+            const docRef = doc(collection(db, 'gallery'));
+            batch.set(docRef, { src: img.src, alt: img.alt, category: category.title });
+          });
+        });
+        batch.commit().catch(console.error);
+      } else {
+        setGallery(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      }
     });
 
     return () => {
@@ -146,67 +179,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSeedProducts = async () => {
-    if (products.length > 0) {
-      if (!window.confirm('You already have products in the database. Loading defaults will duplicate them. Continue?')) return;
-    } else {
-      if (!window.confirm('This will load all default products into the database. Continue?')) return;
-    }
-    
-    setIsSeeding(true);
-    try {
-      const batch = writeBatch(db);
-      fallbackProducts.forEach(p => {
-        const docRef = doc(collection(db, 'products'));
-        batch.set(docRef, {
-          name: p.item,
-          category: p.category,
-          unit: p.unit,
-          price: p.price,
-          moq: p.moq,
-          bulkPrice: p.bulkPrice || 0
-        });
-      });
-      await batch.commit();
-      alert('Default products loaded successfully!');
-    } catch (error) {
-      console.error("Error seeding products:", error);
-      alert("Failed to load default products.");
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
-  const handleSeedGallery = async () => {
-    if (gallery.length > 0) {
-      if (!window.confirm('You already have images in the database. Loading defaults will duplicate them. Continue?')) return;
-    } else {
-      if (!window.confirm('This will load all default gallery images into the database. Continue?')) return;
-    }
-
-    setIsSeeding(true);
-    try {
-      const batch = writeBatch(db);
-      fallbackGalleryCategories.forEach(category => {
-        category.images.forEach(img => {
-          const docRef = doc(collection(db, 'gallery'));
-          batch.set(docRef, {
-            src: img.src,
-            alt: img.alt,
-            category: category.title
-          });
-        });
-      });
-      await batch.commit();
-      alert('Default gallery images loaded successfully!');
-    } catch (error) {
-      console.error("Error seeding gallery:", error);
-      alert("Failed to load default gallery images.");
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   const openProductModal = (product: any = null) => {
     if (product) {
       setEditingItem(product);
@@ -240,6 +212,12 @@ export default function AdminDashboard() {
     }
     setIsGalleryModalOpen(true);
   };
+
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = (p.name || '').toLowerCase().includes(productSearch.toLowerCase());
+    const matchesCategory = !productCategory || p.category === productCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
@@ -343,13 +321,13 @@ export default function AdminDashboard() {
                         {order.items.map((item: any, idx: number) => (
                           <li key={idx} className="flex justify-between text-sm text-slate-600">
                             <span>{item.quantity}x {item.name}</span>
-                            <span>Ksh {(item.price * item.quantity).toLocaleString()}</span>
+                            <span>Tsh {(item.price * item.quantity).toLocaleString()}</span>
                           </li>
                         ))}
                       </ul>
                       <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between font-bold text-slate-900">
                         <span>Total Amount</span>
-                        <span>Ksh {order.totalAmount.toLocaleString()}</span>
+                        <span>Tsh {order.totalAmount.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -365,16 +343,32 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900">Manage Products</h2>
               <div className="flex gap-3">
-                <button 
-                  onClick={handleSeedProducts} 
-                  disabled={isSeeding}
-                  className="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50"
-                >
-                  <Database className="w-4 h-4" /> {isSeeding ? 'Loading...' : 'Load Defaults'}
-                </button>
                 <button onClick={() => openProductModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
                   <Plus className="w-4 h-4" /> Add Product
                 </button>
+              </div>
+            </div>
+
+            {/* Search and Filter */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                 <input 
+                   type="text" 
+                   placeholder="Search products..." 
+                   value={productSearch} 
+                   onChange={e => setProductSearch(e.target.value)} 
+                   className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" 
+                 />
+              </div>
+              <div className="sm:w-64">
+                 <select 
+                   value={productCategory} 
+                   onChange={e => setProductCategory(e.target.value)} 
+                   className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none appearance-none bg-white"
+                 >
+                   <option value="">All Categories</option>
+                   {productCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                 </select>
               </div>
             </div>
 
@@ -423,7 +417,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {products.map(product => (
+                    {filteredProducts.map(product => (
                       <tr key={product.id} className="hover:bg-slate-50">
                         <td className="px-6 py-4">
                           {product.imageUrl ? (
@@ -437,7 +431,7 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 font-medium text-slate-900">{product.name}</td>
                         <td className="px-6 py-4">{product.category}</td>
                         <td className="px-6 py-4">{product.unit}</td>
-                        <td className="px-6 py-4">Ksh {product.price.toLocaleString()}</td>
+                        <td className="px-6 py-4">Tsh {product.price.toLocaleString()}</td>
                         <td className="px-6 py-4">{product.moq}</td>
                         <td className="px-6 py-4 text-right">
                           <button onClick={() => openProductModal(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg mr-2">
@@ -455,7 +449,7 @@ export default function AdminDashboard() {
 
               {/* Mobile Cards */}
               <div className="md:hidden divide-y divide-slate-100">
-                {products.map(product => (
+                {filteredProducts.map(product => (
                   <div key={product.id} className="p-4 hover:bg-slate-50">
                     <div className="flex justify-between items-start mb-2 gap-4">
                       <div className="flex items-center gap-3">
@@ -483,7 +477,7 @@ export default function AdminDashboard() {
                     <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mt-3">
                       <div>
                         <span className="block text-xs text-slate-400">Price</span>
-                        <span className="font-medium text-slate-900">Ksh {product.price.toLocaleString()}</span>
+                        <span className="font-medium text-slate-900">Tsh {product.price.toLocaleString()}</span>
                       </div>
                       <div>
                         <span className="block text-xs text-slate-400">Unit</span>
@@ -496,7 +490,7 @@ export default function AdminDashboard() {
                       {product.bulkPrice > 0 && (
                         <div>
                           <span className="block text-xs text-slate-400">Bulk Price</span>
-                          <span className="font-medium text-slate-900">Ksh {product.bulkPrice.toLocaleString()}</span>
+                          <span className="font-medium text-slate-900">Tsh {product.bulkPrice.toLocaleString()}</span>
                         </div>
                       )}
                     </div>
@@ -513,13 +507,6 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-slate-900">Manage Gallery</h2>
               <div className="flex gap-3">
-                <button 
-                  onClick={handleSeedGallery} 
-                  disabled={isSeeding}
-                  className="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl hover:bg-slate-200 transition-colors disabled:opacity-50"
-                >
-                  <Database className="w-4 h-4" /> {isSeeding ? 'Loading...' : 'Load Defaults'}
-                </button>
                 <button onClick={() => openGalleryModal()} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
                   <Plus className="w-4 h-4" /> Add Image
                 </button>
@@ -592,7 +579,7 @@ export default function AdminDashboard() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Price (Ksh)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Price (Tsh)</label>
                   <input type="number" min="0" required value={productForm.price} onChange={e => setProductForm({...productForm, price: Number(e.target.value)})} className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" />
                 </div>
                 <div>
