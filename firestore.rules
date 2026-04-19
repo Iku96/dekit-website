@@ -49,7 +49,7 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        (get(/databases/$(database)/documents/users/$(request.auth.token.email)).data.role == 'admin' ||
           (request.auth.token.email == "ikumwana@gmail.com" && request.auth.token.email_verified == true));
     }
 
@@ -150,11 +150,16 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.token.email == userId);
       // Only existing admins can create/update other admins, or the default admin
       allow create: if isAdmin() && isValidUser();
       allow update: if isAdmin() && isValidUser();
       allow delete: if isAdmin();
+    }
+
+    // System collection for seeding tracker
+    match /system/{docId} {
+      allow read, write: if isAdmin();
     }
   }
 }

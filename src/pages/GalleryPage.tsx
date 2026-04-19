@@ -47,10 +47,23 @@ export default function GalleryPage() {
   }, []);
 
   const displayCategories = useMemo(() => {
-    const items = galleryItems.length > 0 ? galleryItems : [];
+    // Build a set of src values that are already in the database
+    const dbSrcSet = new Set(galleryItems.map(item => item.src));
+
+    // Start with all database items
+    const allItems = [...galleryItems];
+
+    // Add fallback items that aren't already in the database
+    fallbackGalleryCategories.forEach(category => {
+      category.images.forEach(img => {
+        if (!dbSrcSet.has(img.src)) {
+          allItems.push({ src: img.src, alt: img.alt, category: category.title });
+        }
+      });
+    });
 
     // Map each item to its smart category and filter hidden ones
-    const mappedItems = items.map(item => {
+    const mappedItems = allItems.map(item => {
       const smartCat = getSmartCategory(item.alt || item.name || '', item.category || '');
       return { ...item, smartCategory: smartCat };
     }).filter(item => item.smartCategory !== null);
@@ -63,16 +76,11 @@ export default function GalleryPage() {
       return acc;
     }, {});
 
-    // Always ensure we have at least the official categories structure
-    const categoriesToShow = Object.keys(grouped).length > 0 
-      ? Object.keys(grouped).map(cat => ({
-          title: cat,
-          description: `Explore our collection of ${cat}.`,
-          images: grouped[cat]
-        })).sort((a, b) => OFFICIAL_CATEGORIES.indexOf(a.title) - OFFICIAL_CATEGORIES.indexOf(b.title))
-      : fallbackGalleryCategories;
-
-    return categoriesToShow;
+    return Object.keys(grouped).map(cat => ({
+      title: cat,
+      description: `Explore our collection of ${cat}.`,
+      images: grouped[cat]
+    })).sort((a, b) => OFFICIAL_CATEGORIES.indexOf(a.title) - OFFICIAL_CATEGORIES.indexOf(b.title));
   }, [galleryItems]);
 
   return (

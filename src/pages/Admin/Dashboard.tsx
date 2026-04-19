@@ -43,21 +43,20 @@ export default function AdminDashboard() {
 
     const initSeeding = async () => {
       try {
-        const seedRef = doc(db, 'system', 'seeding');
-        const seedDoc = await getDoc(seedRef);
-        const data = seedDoc.exists() ? seedDoc.data() : { productsSeeded: false, gallerySeeded: false };
+        const gallerySeeded = localStorage.getItem('dekit_gallery_seeded');
+        const productsSeeded = localStorage.getItem('dekit_products_seeded');
 
-        if (!data.productsSeeded) {
+        if (!productsSeeded) {
           const batch = writeBatch(db);
           fallbackProducts.forEach(p => {
             const docRef = doc(collection(db, 'products'));
             batch.set(docRef, { name: p.item, category: p.category, unit: p.unit, price: p.price, moq: p.moq, bulkPrice: p.bulkPrice || 0 });
           });
           await batch.commit();
-          await setDoc(seedRef, { productsSeeded: true }, { merge: true });
+          localStorage.setItem('dekit_products_seeded', 'true');
         }
 
-        if (!data.gallerySeeded) {
+        if (!gallerySeeded) {
           const batch = writeBatch(db);
           fallbackGalleryCategories.forEach(category => {
             category.images.forEach(img => {
@@ -66,7 +65,7 @@ export default function AdminDashboard() {
             });
           });
           await batch.commit();
-          await setDoc(seedRef, { gallerySeeded: true }, { merge: true });
+          localStorage.setItem('dekit_gallery_seeded', 'true');
         }
       } catch (err) {
         console.error("Seeding error:", err);
@@ -83,7 +82,18 @@ export default function AdminDashboard() {
     });
 
     const unsubGallery = onSnapshot(collection(db, 'gallery'), (snapshot) => {
-      setGallery(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const dbItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Merge: include fallback images that aren't already in the database
+      const dbSrcSet = new Set(dbItems.map((item: any) => item.src));
+      const merged = [...dbItems];
+      fallbackGalleryCategories.forEach(category => {
+        category.images.forEach(img => {
+          if (!dbSrcSet.has(img.src)) {
+            merged.push({ id: `fallback-${img.alt}`, src: img.src, alt: img.alt, category: category.title, isFallback: true } as any);
+          }
+        });
+      });
+      setGallery(merged);
     });
 
     const unsubTeam = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -153,9 +163,10 @@ export default function AdminDashboard() {
     if (isSaving) return;
     setIsSaving(true);
     try {
-      if (editingItem) {
+      if (editingItem && !editingItem.isFallback) {
         await updateDoc(doc(db, 'gallery', editingItem.id), galleryForm);
       } else {
+        // New image or editing a fallback → always create a new database doc
         await addDoc(collection(db, 'gallery'), galleryForm);
       }
       setIsGalleryModalOpen(false);
@@ -569,16 +580,21 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {gallery.map(image => (
-                <div key={image.id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden group">
+                <div key={image.id} className={`bg-white rounded-2xl shadow-sm border overflow-hidden group ${image.isFallback ? 'border-amber-300' : 'border-slate-200'}`}>
                   <div className="aspect-video relative">
                     <img src={image.src} alt={image.alt} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    {image.isFallback && (
+                      <span className="absolute top-2 left-2 px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold uppercase rounded-full">Default</span>
+                    )}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                       <button onClick={() => openGalleryModal(image)} className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50">
                         <Edit2 className="w-5 h-5" />
                       </button>
-                      <button onClick={() => handleDeleteGallery(image.id)} className="p-2 bg-white text-red-600 rounded-full hover:bg-red-50">
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      {!image.isFallback && (
+                        <button onClick={() => handleDeleteGallery(image.id)} className="p-2 bg-white text-red-600 rounded-full hover:bg-red-50">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="p-4">
