@@ -6,9 +6,9 @@ import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // Replace these with your actual EmailJS IDs from your dashboard
-const EMAILJS_SERVICE_ID = 'service_xxxxxx'; // e.g. service_gmail
-const EMAILJS_TEMPLATE_ID = 'template_xxxxxx';
-const EMAILJS_PUBLIC_KEY = 'your_public_key_xxxxxx';
+const EMAILJS_SERVICE_ID = 'service_186zpct';
+const EMAILJS_TEMPLATE_ID = 'template_ic2cq3a';
+const EMAILJS_PUBLIC_KEY = '3Np8xrRX25F-DMQHg';
 
 export default function Contact() {
   const formRef = useRef<HTMLFormElement>(null);

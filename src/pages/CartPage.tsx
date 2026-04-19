@@ -7,9 +7,9 @@ import { db } from '../firebase';
 import emailjs from '@emailjs/browser';
 
 // Replace these with your actual EmailJS IDs (Same as Contact form or a different template)
-const EMAILJS_SERVICE_ID = 'service_xxxxxx';
-const EMAILJS_ORDER_TEMPLATE_ID = 'template_xxxxxx'; // Recommendation: Use a different template for orders
-const EMAILJS_PUBLIC_KEY = 'your_public_key_xxxxxx';
+const EMAILJS_SERVICE_ID = 'service_186zpct';
+const EMAILJS_ORDER_TEMPLATE_ID = 'template_2dn884o';
+const EMAILJS_PUBLIC_KEY = '3Np8xrRX25F-DMQHg';
 
 export default function CartPage() {
   const { items, updateQuantity, removeFromCart, totalItems, totalPrice, clearCart } = useCart();

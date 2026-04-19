@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { LogIn, ShieldAlert, Mail, Phone, KeyRound, Smartphone } from 'lucide-react';
 import { auth } from '../../firebase';
-import { signInWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult, sendPasswordResetEmail } from 'firebase/auth';
 
 type LoginMethod = 'google' | 'email' | 'phone';
 
@@ -21,6 +21,8 @@ export default function AdminLogin() {
   const [verificationCode, setVerificationCode] = useState('');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [isSendingCode, setIsSendingCode] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
     if (method === 'phone' && !window.recaptchaVerifier) {
@@ -58,6 +60,25 @@ export default function AdminLogin() {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
       setError(err.message || 'Failed to login with email');
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address first to reset your password.');
+      return;
+    }
+    
+    try {
+      setError('');
+      setResetLoading(true);
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+      setTimeout(() => setResetSent(false), 5000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email');
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -187,6 +208,16 @@ export default function AdminLogin() {
                   placeholder="••••••••"
                 />
               </div>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={resetLoading}
+                className="text-xs font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              >
+                {resetLoading ? 'Sending link...' : resetSent ? 'Link Sent!' : 'Forgot password?'}
+              </button>
             </div>
             <button
               type="submit"
