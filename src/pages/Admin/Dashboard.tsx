@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, addDoc, writeBatch, setDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
-import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database, Users } from 'lucide-react';
+import { LogOut, Package, Image as ImageIcon, ShoppingCart, Trash2, Edit2, Plus, X, Upload, Database, Users, Link } from 'lucide-react';
 import { fallbackGalleryCategories } from '../GalleryPage';
 import { products as fallbackProducts } from '../../data/products';
 import { getSmartCategory, OFFICIAL_CATEGORIES as productCategories } from '../../utils/categoryMapper';
@@ -83,12 +83,15 @@ export default function AdminDashboard() {
 
     const unsubGallery = onSnapshot(collection(db, 'gallery'), (snapshot) => {
       const dbItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Merge: include fallback images that aren't already in the database
+      // Track hidden src values (deleted defaults) and visible db src values
+      const hiddenSrcs = new Set(dbItems.filter((item: any) => item.hidden).map((item: any) => item.src));
+      const visibleDbItems = dbItems.filter((item: any) => !item.hidden);
       const dbSrcSet = new Set(dbItems.map((item: any) => item.src));
-      const merged = [...dbItems];
+      // Merge: include fallback images that aren't in db (neither visible nor hidden)
+      const merged = [...visibleDbItems];
       fallbackGalleryCategories.forEach(category => {
         category.images.forEach(img => {
-          if (!dbSrcSet.has(img.src)) {
+          if (!dbSrcSet.has(img.src) && !hiddenSrcs.has(img.src)) {
             merged.push({ id: `fallback-${img.alt}`, src: img.src, alt: img.alt, category: category.title, isFallback: true } as any);
           }
         });
@@ -204,9 +207,14 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteGallery = async (imageId: string) => {
+  const handleDeleteGallery = async (image: any) => {
     if (window.confirm('Are you sure you want to delete this image?')) {
-      await deleteDoc(doc(db, 'gallery', imageId));
+      if (image.isFallback) {
+        // For fallback images, create a hidden marker in the database
+        await addDoc(collection(db, 'gallery'), { src: image.src, alt: image.alt, category: image.category, hidden: true });
+      } else {
+        await deleteDoc(doc(db, 'gallery', image.id));
+      }
     }
   };
 
@@ -590,11 +598,9 @@ export default function AdminDashboard() {
                       <button onClick={() => openGalleryModal(image)} className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-50">
                         <Edit2 className="w-5 h-5" />
                       </button>
-                      {!image.isFallback && (
-                        <button onClick={() => handleDeleteGallery(image.id)} className="p-2 bg-white text-red-600 rounded-full hover:bg-red-50">
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      )}
+                      <button onClick={() => handleDeleteGallery(image)} className="p-2 bg-white text-red-600 rounded-full hover:bg-red-50">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                   <div className="p-4">
@@ -614,17 +620,32 @@ export default function AdminDashboard() {
               <h2 className="text-2xl font-bold text-slate-900">Manage Users & Roles</h2>
             </div>
 
+            <div className="bg-blue-50 border border-blue-200 p-5 rounded-2xl mb-8">
+              <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2"><Link className="w-4 h-4" /> How Login Works</h3>
+              <p className="text-sm text-blue-800 mb-3">
+                Admins log in at <strong>{window.location.origin}/admin/login</strong> using their <strong>Email + Password</strong> or <strong>Google account</strong>. 
+                Add their Google email below to grant access. Share the login link with them so they can sign in.
+              </p>
+              <button 
+                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/admin/login`); alert('Login link copied!'); }}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                <Link className="w-4 h-4" /> Copy Login Link
+              </button>
+            </div>
+
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
               <h3 className="font-bold text-slate-800 mb-4">Add New Admin</h3>
+              <p className="text-sm text-slate-500 mb-4">Enter the Google email address of the person you want to grant admin access. They can then log in using Google Sign-In at the login page above.</p>
               <form onSubmit={handleSaveTeamMember} className="flex gap-4 items-end">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Google Email Address</label>
                   <input 
                     type="email" 
                     required 
                     value={newAdminEmail} 
                     onChange={e => setNewAdminEmail(e.target.value)} 
-                    placeholder="user@example.com"
+                    placeholder="user@gmail.com"
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" 
                   />
                 </div>

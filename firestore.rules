@@ -93,11 +93,12 @@ service cloud.firestore {
 
     function isValidGalleryImage() {
       let data = request.resource.data;
-      return hasOnlyAllowedFields(['src', 'alt', 'category']) &&
+      return hasOnlyAllowedFields(['src', 'alt', 'category', 'hidden']) &&
              hasRequiredFields(['src', 'alt', 'category']) &&
              isValidUrl(data.src) &&
              isValidString(data.alt, 1, 100) &&
-             isValidString(data.category, 1, 50);
+             isValidString(data.category, 1, 50) &&
+             (!('hidden' in data) || data.hidden is bool);
     }
 
     function areValidOrderItems(items) {

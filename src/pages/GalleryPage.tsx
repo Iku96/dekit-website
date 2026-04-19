@@ -47,16 +47,18 @@ export default function GalleryPage() {
   }, []);
 
   const displayCategories = useMemo(() => {
-    // Build a set of src values that are already in the database
+    // Separate hidden markers from visible items
+    const hiddenSrcs = new Set(galleryItems.filter(item => item.hidden).map(item => item.src));
+    const visibleDbItems = galleryItems.filter(item => !item.hidden);
     const dbSrcSet = new Set(galleryItems.map(item => item.src));
 
-    // Start with all database items
-    const allItems = [...galleryItems];
+    // Start with visible database items
+    const allItems = [...visibleDbItems];
 
-    // Add fallback items that aren't already in the database
+    // Add fallback items that aren't in db (visible or hidden)
     fallbackGalleryCategories.forEach(category => {
       category.images.forEach(img => {
-        if (!dbSrcSet.has(img.src)) {
+        if (!dbSrcSet.has(img.src) && !hiddenSrcs.has(img.src)) {
           allItems.push({ src: img.src, alt: img.alt, category: category.title });
         }
       });
